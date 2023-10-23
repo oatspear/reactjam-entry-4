@@ -142,8 +142,20 @@ function getArmiesByFormation(player: PlayerState): ArmyState[] {
 // -----------------------------------------------------------------------------
 
 
-export interface CombatState {
+export interface CombatStep {
+  attackType: MinionType;
+  defenseType: MinionType;
+  result: number;
+}
 
+
+export interface CombatState {
+  attacker: PlayerIndex;
+  defender: PlayerIndex;
+  step1: CombatStep;
+  step2: CombatStep;
+  step3: CombatStep;
+  result: number;
 }
 
 
@@ -152,17 +164,12 @@ export interface CombatState {
 // -----------------------------------------------------------------------------
 
 
-export interface CombatStep {
-  index: number;
-  winner: PlayerIndex;
-}
-
-
 export interface GameState {
   phase: GameplayPhase;
   timer: number;
   turnsTaken: number;
   players: PlayerState[];
+  lastCombat?: CombatState;
 }
 
 
@@ -321,6 +328,11 @@ function enterCombatPhase(game: GameState): void {
   const defenseTypes: MinionType[] = formationToMinionTypeStack(defender.formation);
   const attackingArmies: ArmyState[] = getArmiesByFormation(attacker);
   const defendingArmies: ArmyState[] = getArmiesByFormation(defender);
+  for (let i = 0; i < 3; ++i) {
+    const attackingArmy: ArmyState = attackingArmies[i];
+    const defendingArmy: ArmyState = defendingArmies[i];
+    
+  }
 }
 
 
@@ -333,72 +345,42 @@ function resolveCombat(
 ): number {
   const attackTypes: MinionType[] = formationToMinionTypeStack(attackFormation);
   const defenseTypes: MinionType[] = formationToMinionTypeStack(defenseFormation);
-
-  const attackingMinions: number[] = [];
-  for (const minion of attackTypes) {
-    attackingMinions.push(minionsByType(attacker, minion));
-  }
-
-  const defendingMinions: number[] = [];
-  for (const minion of defenseTypes) {
-    defendingMinions.push(minionsByType(defender, minion));
-  }
-
-  let attackType: MinionType = attackTypes.pop() as MinionType;
-  let defenseType: MinionType = defenseTypes.pop() as MinionType;
-  let numAttackers: number = minionsByType(attacker, attackType);
-  let numDefenders: number = minionsByType(defender, defenseType);
-
+  
+  let score = 0;
   while (attackTypes.length > 0 && defenseTypes.length > 0) {
-    // are there any attackers of this type?
-    if (numAttackers <= 0) {
-      attackType = attackTypes.pop() as MinionType;
-      numAttackers = minionsByType(attacker, attackType);
-      continue;
-    }
-    // are there any defenders of this type?
-    if (numDefenders <= 0) {
-      defenseType = defenseTypes.pop() as MinionType;
-      numDefenders = minionsByType(defender, defenseType);
-      continue;
-    }
-    // calculate the type matchup bonuses
-    const bonusAttackType = typeMatchupMultiplier(attackType, defenseType);
-    const bonusDefenseType = typeMatchupMultiplier(defenseType, attackType);
-    // calculate total damage output
-    const totalAttack = numAttackers * bonusAttackType;
-    const totalDefense = numDefenders * bonusDefenseType;
-    // update the remaining survivors
-    numAttackers -= totalDefense;
-    numDefenders -= totalAttack;
-    // outcome of this round
-    let result = CombatResult.DRAW;
-    if (numAttackers <= 0 && numDefenders > 0) {
-      result = CombatResult.LOSS;
-    } else if (numAttackers > 0 && numDefenders <= 0) {
-      result = CombatResult.WIN;
-    }
-    // TODO emit combat step
+    // get the matchup
+    const attackType: MinionType = attackTypes.pop() as MinionType;
+    const defenseType: MinionType = defenseTypes.pop() as MinionType;
+    // update the score
+    score += resolveCombatStep(attacker, attackType, defender, defenseType);
   }
 
-  // general outcome
-  let result = CombatResult.DRAW;
-  if (numAttackers <= 0 && numDefenders > 0) {
-    result = CombatResult.LOSS;
-  } else if (numAttackers > 0 && numDefenders <= 0) {
-    result = CombatResult.WIN;
+  // cleanup leftovers
+  while (attackTypes.length > 0) {
+    // get the (empty) matchup
+    const attackType: MinionType = attackTypes.pop() as MinionType;
+    const army = getPlayerArmy(attacker, attackType);
+    // update the score
+    score += army.minions * army.tier;
   }
-  return result;
+  while (defenseTypes.length > 0) {
+    // get the (empty) matchup
+    const defenseType: MinionType = defenseTypes.pop() as MinionType;
+    const army = getPlayerArmy(defender, defenseType);
+    // update the score
+    score += army.minions * army.tier;
+  }
+
+  return score;
 }
 
 
 function resolveCombatStep(
-  game: GameState,
   attacker: PlayerState,
   attackType: MinionType,
   defender: PlayerState,
   defenseType: MinionType
-): PlayerIndex {
+): number {
   // get each player's armies of the given minion type
   const attackingArmy = getPlayerArmy(attacker, attackType);
   const defendingArmy = getPlayerArmy(defender, defenseType);
@@ -411,6 +393,23 @@ function resolveCombatStep(
   // calculate the total damage from each side
   const totalAttack = attackingArmy.minions * attackingMinionValue;
   const totalDefense = defendingArmy.minions * defendingMinionValue;
+  const result = totalAttack - totalDefense;
+  // return the combat step data
+  return result;
+
+  /*{
+    attacker: attacker.index,
+    defender: defender.index,
+    attackType,
+    defenseType,
+    attackBonus,
+    defenseBonus,
+    totalAttack,
+    totalDefense,
+    result,
+  }*/
+
+  /*
   // calculate how many minions die on each side
   const attackerCasualties = (totalDefense / attackingMinionValue) | 0;
   const defenderCasualties = (totalAttack / defendingMinionValue) | 0;
@@ -429,6 +428,7 @@ function resolveCombatStep(
   if (score > 0) { return attacker.index }
   if (score < 0) { return defender.index }
   return PlayerIndex.NONE;
+  */
 }
 
 
