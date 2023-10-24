@@ -48,3 +48,47 @@ button:focus-visible {
 .hidden {
   display: none;
 }
+
+.h-box {
+  display: flex;
+  flex-direction: row;
+}
+
+.v-box {
+  display: flex;
+  flex-direction: column;
+}
+
+.align-items-center {
+  align-items: center;
+}
+
+.justify-center {
+  justify-content: center;
+}
+
+.justify-end {
+  justify-content: flex-end;
+}
+
+.space-between {
+  justify-content: space-between;
+}
+
+.evenly-spaced {
+  justify-content: space-evenly;
+}
+
+.space-around {
+  justify-content: space-around;
+}
+
+main {
+  width: 100%;
+  max-width: 320px;
+  height: 400px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+}

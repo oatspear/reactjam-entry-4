@@ -1,26 +1,34 @@
 import { PlayerState } from '../logic';
+import LazyImage from './LazyImage';
 import './PlayerStatusBar.css';
+
+import iconPlaceholder from "../assets/avatar-placeholder.png";
 
 
 // Define the type for component props
 interface PlayerStatusBarProps {
   player: PlayerState;
   displayName: string;
-  flip: boolean;
+  avatarUrl: string;
 }
 
 
-const PlayerStatusBar = ({ player, displayName, flip }: PlayerStatusBarProps): JSX.Element => {
+const PlayerStatusBar = ({ player, displayName, avatarUrl }: PlayerStatusBarProps): JSX.Element => {
   return (
     <div className="player-status-bar">
-      { flip && <p className="nameplate top">{ displayName }</p> }
-      <div className="status-labels">
-        <span>B: {player.bench.length}</span>
-        <span>T: {player.deck.spells.length}</span>
-        <span>G: {player.graveyard.length}</span>
-        <span>R: {player.resources}</span>
+      <div className="nameplate">
+        <LazyImage src={avatarUrl} alt={"avatar"} placeholder={iconPlaceholder} customClass="overflowing-icon" />
+        <span className="name">{ displayName }</span>
+        <div className="triangle"></div>
       </div>
-      { !flip && <p className="nameplate bottom">{ displayName }</p> }
+
+      <div className="stats">
+        <div className="triangle"></div>
+        <span className="label">{ player.resources }</span>
+        <div className='overflowing-icon'>
+          <img src={iconPlaceholder} />
+        </div>
+      </div>
     </div>
   );
 };

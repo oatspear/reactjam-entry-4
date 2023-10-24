@@ -1,10 +1,7 @@
-import { useEffect, useState } from "react"
-
 import "./App.css"
+import { useEffect, useState } from "react"
 import { GameState, PlayerIndex, PlayerState, getPlayerIndex } from "./logic.ts"
-
-import BattlefieldView, { BattlefieldCallbacks } from './components/BattlefieldView.tsx';
-import PlayerActionBar from "./components/PlayerActionBar.tsx";
+import PlayerStatusBar from "./components/PlayerStatusBar.tsx";
 
 import iconAvatarPlaceholder from "./assets/avatar-placeholder.png";
 
@@ -77,9 +74,6 @@ function App() {
 
   const spawnMinion = () => {
     if (game == null) { return; }
-    const benchIndex: number = 0;
-    const spawnPoint: number = 0;
-    const moveTo: number = 0;
     // Rune.actions.spawn({ benchIndex, spawnPoint, moveTo });
   };
 
@@ -107,23 +101,10 @@ function App() {
   const { height, width } = getWindowDimensions();
 
   const playerIndex: PlayerIndex = getPlayerIndex(game, myPlayerId);
-  const [enemy, player] = getTopBottomPlayers(game, playerIndex, players);
+  const [clientEnemy, clientPlayer] = getTopBottomPlayers(game, playerIndex, players);
 
-  const playerState: PlayerState = game.players[player.index];
-  const enemyState: PlayerState = game.players[enemy.index];
-
-  const battlefieldCallbacks: BattlefieldCallbacks = {
-    onTileSelected(i: number) {
-      if (uiState === UIState.ANIMATING) { return }
-      setSelectedTile(i);
-      const tile = game.tiles[i];
-      if (tile.owner === playerIndex) {
-
-      } else {
-
-      }
-    }
-  };
+  const playerState: PlayerState = game.players[clientPlayer.index];
+  const enemyState: PlayerState = game.players[clientEnemy.index];
 
   const showPlayerActionBar: boolean = uiState != UIState.ANIMATING;
   const tempEnemyDisplayName: string = `width: ${width} ~ height: ${height}`;
@@ -131,17 +112,11 @@ function App() {
   return (
     <>
       <code>{tempEnemyDisplayName}</code>
-      <BattlefieldView game={game} player={playerIndex} callbacks={battlefieldCallbacks} />
+      <main>
+        <PlayerStatusBar player={enemyState} displayName={clientEnemy.displayName} avatarUrl={clientEnemy.avatarUrl} />
+        <PlayerStatusBar player={playerState} displayName={clientPlayer.displayName} avatarUrl={clientPlayer.avatarUrl} />
+      </main>
       <div className="main-action-container">
-        {
-          showPlayerActionBar &&
-          <PlayerActionBar
-            player={playerState}
-            enemy={enemyState}
-            playerAvatarUrl={player.avatarUrl}
-            enemyAvatarUrl={enemy.avatarUrl}
-          />
-        }
       </div>
     </>
   )

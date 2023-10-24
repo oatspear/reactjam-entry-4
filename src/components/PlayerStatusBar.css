@@ -1,44 +1,101 @@
+/******************************************************************************/
+/* Top Level */
+/******************************************************************************/
+
+
 .player-status-bar {
   width: 100%;
   margin: 0;
   padding: 0;
   display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.player-status-bar > .status-labels {
-  min-width: 328px;  /* 64*5 + 2*4 */
-  display: flex;
   flex-direction: row;
   align-items: center;
-  justify-content: space-around;
-  padding: 0.25rem 0;
-  color: white;
+  color: ivory;
+}
+
+
+/******************************************************************************/
+/* Nameplate */
+/******************************************************************************/
+
+
+.player-status-bar > .nameplate {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: row;
+}
+
+
+.nameplate > .name {
+  flex: 1;
+  font-size: 1rem;
+  font-weight: bold;
+  line-height: 2;
+  overflow: hidden;
+  text-align: left;
+  padding-left: 1.25em;
+  white-space: nowrap;
   background-color: #333333;
 }
 
-.status-labels > span {
-  font-size: 1rem;
-  font-weight: bold;
-  line-height: 1.25;
-}
 
-/*
-.status-labels > span > img {
-  width: 16px;
-  height: 16px;
-}
-*/
-
-.player-status-bar > .nameplate {
-  display: inline-block;
+.nameplate > .triangle {
   flex: 0 0 auto;
+  width: 16px;
+  border-top: 32px solid #333333;
+  border-right: 16px solid transparent;
+}
+
+
+/******************************************************************************/
+/* Stats */
+/******************************************************************************/
+
+
+.player-status-bar > .stats {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: row;
   font-size: 1rem;
   font-weight: bold;
-  line-height: 1.25;
-  padding: 0.25rem 0.5rem;
-  overflow: hidden;
-  border: 1px solid black;
-  margin: 0;
+  line-height: 2;
+}
+
+
+.stats > .label {
+  min-width: 3em;
+  flex: 0 0 auto;
+  background-color: #333333;
+}
+
+
+.stats > .triangle {
+  flex: 0 0 auto;
+  width: 16px;
+  border-bottom: 32px solid #333333;
+  border-left: 16px solid transparent;
+}
+
+
+/******************************************************************************/
+/* Icons */
+/******************************************************************************/
+
+
+.nameplate > .overflowing-icon,
+.stats > .overflowing-icon {
+  width: 32px;
+  height: 32px;
+  position: relative;
+}
+
+
+.nameplate > .overflowing-icon > img,
+.stats > .overflowing-icon > img {
+  width: 48px;
+  height: 48px;
+  position: absolute;
+  top: -8px;
+  left: -8px;
 }
