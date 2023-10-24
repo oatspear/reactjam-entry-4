@@ -1,5 +1,6 @@
 import './BattlefieldView.css';
 import { GameState, PlayerIndex, PlayerState } from '../logic.ts';
+import Army from './Army.tsx';
 
 
 export interface BattlefieldCallbacks {
@@ -36,9 +37,18 @@ const Battlefield = ({ game, playerIndex, enemyIndex }: BattlefieldProps): JSX.E
       </div>
 
       <div className="arena">
-        <div className="column">1</div>
-        <div className="column">2</div>
-        <div className="column">3</div>
+        <div className="column">
+          <Army army={enemy.power} flip={true} />
+          <Army army={player.power} flip={false} />
+        </div>
+        <div className="column">
+          <Army army={enemy.speed} flip={true} />
+          <Army army={player.speed} flip={false} />
+        </div>
+        <div className="column">
+          <Army army={enemy.technical} flip={true} />
+          <Army army={player.technical} flip={false} />
+        </div>
       </div>
 
       <div className="indicators"></div>

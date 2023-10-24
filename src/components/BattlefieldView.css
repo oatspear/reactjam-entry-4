@@ -62,6 +62,9 @@
 .battlefield > .arena > .column {
   flex: 0 0 auto;
   min-width: 64px;
-  height: 128px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
   background-color: aqua;
+  padding: 1rem 0;
 }
