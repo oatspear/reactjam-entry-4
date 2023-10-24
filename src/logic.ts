@@ -396,40 +396,42 @@ function resolveCombatStep(
   const result = totalAttack - totalDefense;
   // return the combat step data
   return result;
-
-  /*{
-    attacker: attacker.index,
-    defender: defender.index,
-    attackType,
-    defenseType,
-    attackBonus,
-    defenseBonus,
-    totalAttack,
-    totalDefense,
-    result,
-  }*/
-
-  /*
-  // calculate how many minions die on each side
-  const attackerCasualties = (totalDefense / attackingMinionValue) | 0;
-  const defenderCasualties = (totalAttack / defendingMinionValue) | 0;
-  // register casualties and calculate score
-  let score = 0;
-  if (attackerCasualties >= attackingArmy.minions) {
-    // attackingArmy.minions = 0;
-    // defender.victoryPoints++;
-    score++;
-  }
-  if (defenderCasualties >= defendingArmy.minions) {
-    // defendingArmy.minions = 0;
-    // attacker.victoryPoints++;
-    score--;
-  }
-  if (score > 0) { return attacker.index }
-  if (score < 0) { return defender.index }
-  return PlayerIndex.NONE;
-  */
 }
+
+
+/*{
+  attacker: attacker.index,
+  defender: defender.index,
+  attackType,
+  defenseType,
+  attackBonus,
+  defenseBonus,
+  totalAttack,
+  totalDefense,
+  result,
+}*/
+
+
+/*
+// calculate how many minions die on each side
+const attackerCasualties = (totalDefense / attackingMinionValue) | 0;
+const defenderCasualties = (totalAttack / defendingMinionValue) | 0;
+// register casualties and calculate score
+let score = 0;
+if (attackerCasualties >= attackingArmy.minions) {
+  // attackingArmy.minions = 0;
+  // defender.victoryPoints++;
+  score++;
+}
+if (defenderCasualties >= defendingArmy.minions) {
+  // defendingArmy.minions = 0;
+  // attacker.victoryPoints++;
+  score--;
+}
+if (score > 0) { return attacker.index }
+if (score < 0) { return defender.index }
+return PlayerIndex.NONE;
+*/
 
 
 function formationToMinionTypes(formation: Formation): MinionType[] {
@@ -592,8 +594,6 @@ Rune.initLogic({
     deploy({ minion }, { game, playerId }) {
       // validate inputs
       const player: PlayerState = validateDeployCommand(game, playerId, minion);
-      // empty the event queue
-      game.events = [];
       // execute the command
       deployMinion(game, player, minion);
       // transition to the next player, ask for new input
@@ -604,8 +604,6 @@ Rune.initLogic({
     upgrade({ minion }, { game, playerId }) {
       // validate inputs
       const player: PlayerState = validateUpgradeCommand(game, playerId, minion);
-      // empty the event queue
-      game.events = [];
       // execute the command
       upgradeMinions(game, player, minion);
       // transition to the next player, ask for new input
@@ -615,8 +613,6 @@ Rune.initLogic({
 
     attack({ formation }, { game, playerId }) {
       const player: PlayerState = validateAttackCommand(game, playerId);
-      // empty the event queue
-      game.events = [];
       // execute the command
       player.formation = formation;
       player.ready = true;
@@ -627,8 +623,6 @@ Rune.initLogic({
 
     ready(_, { game, playerId }) {
       const player: PlayerState = validateReadyCommand(game, playerId);
-      // empty the event queue
-      game.events = [];
       // execute the command
       player.ready = true;
       // transition to the next player, ask for new input
