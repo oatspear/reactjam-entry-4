@@ -68,3 +68,14 @@
   background-color: aqua;
   padding: 1rem 0;
 }
+
+
+.battlefield > .arena > .column > .army-score {
+  flex: 0 0 auto;
+  min-width: 0;
+  font-weight: bold;
+  border-radius: 4px;
+  background-color: goldenrod;
+  margin: 0 auto;
+  padding: 0.25em 1em;
+}
