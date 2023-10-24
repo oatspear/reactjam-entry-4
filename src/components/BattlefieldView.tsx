@@ -1,34 +1,49 @@
 import './BattlefieldView.css';
-import { GameState, PlayerIndex, Tile } from '../logic.ts';
-import TileView from './TileView.tsx';
+import { GameState, PlayerIndex, PlayerState } from '../logic.ts';
 
 
 export interface BattlefieldCallbacks {
-  onTileSelected: (i: number) => void;
+  
 }
 
 
 // Define the type for component props
 interface BattlefieldProps {
   game: GameState;
-  player: PlayerIndex;
-  callbacks: BattlefieldCallbacks;
+  playerIndex: PlayerIndex;
+  enemyIndex: PlayerIndex;
 }
 
 
-const BattlefieldView = ({game, callbacks}: BattlefieldProps): JSX.Element => {
-  function newTileView(tile: Tile, i: number): JSX.Element {
-    if (i === 12) { return (<div></div>) }
+// ♦ ▲ ▼
+const Battlefield = ({ game, playerIndex, enemyIndex }: BattlefieldProps): JSX.Element => {
+  const player: PlayerState = game.players[playerIndex];
+  const enemy: PlayerState = game.players[enemyIndex];
 
-    function handleClick() { callbacks.onTileSelected(tile.index) }
-    return (<TileView key={i} tile={tile} handleClick={handleClick} />);
-  }
+  // score is in [-3, 3], shift it by +3 to get [0, 6], i.e., a marker index.
+  const score: number = enemy.victoryPoints - player.victoryPoints + 3;
 
   return (
     <div className="battlefield">
-      { game.tiles.map(newTileView) }
+      <div className="score-meter">
+        <span className="marker">♦</span>
+        <span className="marker">♦</span>
+        <span className="marker">♦</span>
+        <span className="marker">♦</span>
+        <span className="marker">♦</span>
+        <span className="marker">♦</span>
+        <span className="marker">♦</span>
+      </div>
+
+      <div className="arena">
+        <div className="column">1</div>
+        <div className="column">2</div>
+        <div className="column">3</div>
+      </div>
+
+      <div className="indicators"></div>
     </div>
   );
 };
 
-export default BattlefieldView;
+export default Battlefield;

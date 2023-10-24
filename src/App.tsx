@@ -4,6 +4,7 @@ import { GameState, PlayerIndex, PlayerState, getPlayerIndex } from "./logic.ts"
 import PlayerStatusBar from "./components/PlayerStatusBar.tsx";
 
 import iconAvatarPlaceholder from "./assets/avatar-placeholder.png";
+import Battlefield from "./components/BattlefieldView.tsx";
 
 type PlayersObject = Record<string, { playerId: string, displayName: string, avatarUrl: string }>;
 
@@ -114,6 +115,7 @@ function App() {
       <code>{tempEnemyDisplayName}</code>
       <main>
         <PlayerStatusBar player={enemyState} displayName={clientEnemy.displayName} avatarUrl={clientEnemy.avatarUrl} />
+        <Battlefield game={game} playerIndex={clientPlayer.index} enemyIndex={clientEnemy.index} />
         <PlayerStatusBar player={playerState} displayName={clientPlayer.displayName} avatarUrl={clientPlayer.avatarUrl} />
       </main>
       <div className="main-action-container">
