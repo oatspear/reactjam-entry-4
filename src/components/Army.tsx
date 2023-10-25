@@ -42,12 +42,13 @@ function indicators(): JSX.Element {
 
 
 function valueLabel(icon: string, value: number): JSX.Element {
+  // const nn: string = String(value).padStart(2, "0");
   return (
     <div className="stats">
       <div className="round-icon icon-32">
         <img src={icon} alt="army type" />
       </div>
-      <span>00</span>
+      <span>{value}</span>
     </div>
   );
 }

@@ -128,7 +128,7 @@ export interface ArmyState {
 
 
 function newArmyState(type: MinionType): ArmyState {
-  return { type, minions: 0, tier: 1, combatMultiplier: 0, combatValue: 0 }
+  return { type, minions: 1, tier: 1, combatMultiplier: 0, combatValue: 0 }
 }
 
 

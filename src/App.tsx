@@ -113,8 +113,8 @@ function App() {
         <Battlefield game={game} playerIndex={clientPlayer.index} enemyIndex={clientEnemy.index} />
         <PlayerStatusBar player={playerState} displayName={clientPlayer.displayName} avatarUrl={clientPlayer.avatarUrl} />
       </main>
-      <div className="main-action-container">
-        <div>
+      <section className="main-action-container">
+        <div className="h-box evenly-spaced align-items-center">
           <button>OK</button>
         </div>
         <div className="h-box evenly-spaced align-items-center">
@@ -131,7 +131,7 @@ function App() {
             <span>3G</span>
           </div>
         </div>
-      </div>
+      </section>
     </>
   )
 }

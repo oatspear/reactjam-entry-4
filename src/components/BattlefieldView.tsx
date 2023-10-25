@@ -1,5 +1,5 @@
 import './BattlefieldView.css';
-import { GameState, PlayerIndex, PlayerState } from '../logic.ts';
+import { GameState, GameplayPhase, PlayerIndex, PlayerState } from '../logic.ts';
 import Army from './Army.tsx';
 
 
@@ -18,6 +18,8 @@ interface BattlefieldProps {
 
 // ♦ ▲ ▼
 const Battlefield = ({ game, playerIndex, enemyIndex }: BattlefieldProps): JSX.Element => {
+  const isInputPhase: boolean = game.phase === GameplayPhase.PLAYER_INPUT;
+  const isCombatPhase: boolean = game.phase === GameplayPhase.COMBAT;
   const player: PlayerState = game.players[playerIndex];
   const enemy: PlayerState = game.players[enemyIndex];
 
@@ -39,17 +41,26 @@ const Battlefield = ({ game, playerIndex, enemyIndex }: BattlefieldProps): JSX.E
       <div className="arena">
         <div className="column">
           <Army army={enemy.power} flip={true} />
-          <span className="army-score">00</span>
+          <div className="army-score">
+            { isCombatPhase && "00" }
+          </div>
           <Army army={player.power} flip={false} />
         </div>
+
         <div className="column">
           <Army army={enemy.speed} flip={true} />
-          <span className="army-score">00</span>
+          <div className="army-score">
+            { isCombatPhase && "00" }
+            { isInputPhase && <button className="action">Go!</button> }
+          </div>
           <Army army={player.speed} flip={false} />
         </div>
+
         <div className="column">
           <Army army={enemy.technical} flip={true} />
-          <span className="army-score">00</span>
+          <div className="army-score">
+            { isCombatPhase && "00" }
+          </div>
           <Army army={player.technical} flip={false} />
         </div>
       </div>
