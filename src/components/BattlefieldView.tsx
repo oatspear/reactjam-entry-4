@@ -41,19 +41,16 @@ const Battlefield = ({ game, playerIndex, enemyIndex }: BattlefieldProps): JSX.E
           <Army army={enemy.power} flip={true} />
           <span className="army-score">00</span>
           <Army army={player.power} flip={false} />
-          <button>+</button>
         </div>
         <div className="column">
           <Army army={enemy.speed} flip={true} />
           <span className="army-score">00</span>
           <Army army={player.speed} flip={false} />
-          <button>+</button>
         </div>
         <div className="column">
           <Army army={enemy.technical} flip={true} />
           <span className="army-score">00</span>
           <Army army={player.technical} flip={false} />
-          <button>+</button>
         </div>
       </div>
 
