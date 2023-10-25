@@ -1,6 +1,6 @@
 import "./App.css"
 import { useEffect, useState } from "react"
-import { GameState, PlayerIndex, PlayerState, getPlayerIndex } from "./logic.ts"
+import { GameState, GameplayPhase, PlayerIndex, PlayerState, getPlayerIndex } from "./logic.ts"
 import PlayerStatusBar from "./components/PlayerStatusBar.tsx";
 
 import iconAvatarPlaceholder from "./assets/avatar-placeholder.png";
@@ -26,15 +26,7 @@ enum UIState {
   INITIAL = 0,
   ANIMATING,
   INPUT_MAIN,
-  INPUT_MOVE,
-  INPUT_ATTACK,
-  INPUT_PLAYER_BENCH,
-  INPUT_PLAYER_TECH,
-  INPUT_PLAYER_GRAVEYARD,
-  INPUT_ENEMY_MINION,
-  INPUT_ENEMY_BENCH,
-  INPUT_ENEMY_TECH,
-  INPUT_ENEMY_GRAVEYARD,
+  TRANSITION_TO_COMBAT,
 }
 
 
@@ -80,7 +72,7 @@ function App() {
 
   useEffect(() => {
     Rune.initClient({
-      onChange: ({ newGame, yourPlayerId, players }) => {
+      onChange: ({ newGame, oldGame, yourPlayerId, players }) => {
         setGame(newGame);
         setMyPlayerId(yourPlayerId);
         setPlayers({
@@ -91,6 +83,9 @@ function App() {
             avatarUrl: iconAvatarPlaceholder,
           },
         });
+        if (newGame.phase === GameplayPhase.COMBAT && oldGame.phase != GameplayPhase.COMBAT) {
+          setUiState(UIState.TRANSITION_TO_COMBAT);
+        }
       },
     })
   }, []);  
@@ -119,6 +114,23 @@ function App() {
         <PlayerStatusBar player={playerState} displayName={clientPlayer.displayName} avatarUrl={clientPlayer.avatarUrl} />
       </main>
       <div className="main-action-container">
+        <div>
+          <button>OK</button>
+        </div>
+        <div className="h-box evenly-spaced align-items-center">
+          <div className="v-box align-items-center">
+            <button>P+</button>
+            <span>3G</span>
+          </div>
+          <div className="v-box align-items-center">
+            <button>S+</button>
+            <span>3G</span>
+          </div>
+          <div className="v-box align-items-center">
+            <button>T+</button>
+            <span>3G</span>
+          </div>
+        </div>
       </div>
     </>
   )
