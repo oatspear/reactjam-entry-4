@@ -99,6 +99,27 @@
 
 
 .main-action-bar > .action > button {
+  padding: 0;
+  overflow: hidden;
+  background-color: #333333;
+  outline: none;
+}
+
+.main-action-bar > .action > button:hover {
+  outline: 2px solid white;
+}
+
+.main-action-bar > .action > button:focus,
+.main-action-bar > .action > button:focus-visible {
+  outline: 2px solid white;
+}
+
+.main-action-bar > .action > button:active {
+  background-color: #101010;
+}
+
+
+.main-action-bar > .action > button > img {
   width: 64px;
   height: 64px;
 }

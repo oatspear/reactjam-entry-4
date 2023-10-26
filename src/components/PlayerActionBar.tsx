@@ -5,6 +5,9 @@ import { useCallback, useState } from 'react';
 import iconPower from "../assets/power.png";
 import iconSpeed from "../assets/speed.png";
 import iconTechnical from "../assets/technical.png";
+import iconDeploy from "../assets/deploy-white.png";
+import iconUpgrade2 from "../assets/upgrade2-bw.png";
+import iconUpgrade3 from "../assets/upgrade3-bw.png";
 
 
 // Define the type for component props
@@ -71,11 +74,15 @@ const PlayerActionBar = ({ player }: PlayerActionBarProps): JSX.Element => {
 
       <div className="main-action-bar">
         <div className="action">
-          <button>D</button>
+          <button>
+            <img src={iconDeploy} alt="Deploy" />
+          </button>
           <span>1G</span>
         </div>
         <div className="action">
-          <button>U</button>
+          <button>
+            <img src={iconUpgrade2} alt="Upgrade" />
+          </button>
           <span>3G</span>
         </div>
       </div>
