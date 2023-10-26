@@ -18,12 +18,6 @@ interface ClientPlayerInfo {
   resources: number;
 }
 
-interface DisplayMinionStats {
-  power: number;
-  health: number;
-  movement: number;
-}
-
 enum UIState {
   INITIAL = 0,
   ANIMATING,

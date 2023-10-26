@@ -7,9 +7,16 @@ import iconTechnical from "../assets/technical-green.png";
 
 // Define the type for component props
 interface ArmyProps {
+  index: number;
   army: ArmyState;
   flip: boolean;
+  onClick?: (i: number) => void;
+  isActive: boolean;
+  isHighlighted: boolean;
 }
+
+
+function noop() {}
 
 
 function extrasTop(icon: string, value: number): JSX.Element {
@@ -54,7 +61,7 @@ function valueLabel(icon: string, value: number): JSX.Element {
 }
 
 
-const Army = ({ army, flip }: ArmyProps): JSX.Element => {
+const Army = ({ index, army, flip, onClick, isActive, isHighlighted }: ArmyProps): JSX.Element => {
   const icon: string = army.type === MinionType.POWER
     ? iconPower
     : army.type === MinionType.SPEED
@@ -62,16 +69,21 @@ const Army = ({ army, flip }: ArmyProps): JSX.Element => {
     : iconTechnical;
 
   const armyValue: number = army.minions * army.tier;
+  const futureArmyValue: number = (army.minions + army.production) * (army.tier + army.upgrades);
+
+  let cls = "army";
+  if (isActive) { cls = "army focus" }
+  else if (isHighlighted) { cls = "army highlight" }
 
   return (
-    <div className="army">
+    <div className={cls} onClick={onClick == null ? noop : () => onClick(index)}>
       { flip && extrasTop(icon, armyValue) }
 
       <div className="round-icon icon-64">
         <img src={icon} alt="sprite" />
       </div>
 
-      { !flip && extrasBottom(icon, armyValue) }
+      { !flip && extrasBottom(icon, futureArmyValue) }
     </div>
   );
 };

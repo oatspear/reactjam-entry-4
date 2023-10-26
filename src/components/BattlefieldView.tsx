@@ -1,6 +1,7 @@
 import './BattlefieldView.css';
-import { GameState, GameplayPhase, PlayerIndex, PlayerState } from '../logic.ts';
+import { ArmyState, Formation, GameState, GameplayPhase, MinionType, PlayerIndex, PlayerState, formationToMinionTypes, getArmiesByFormation, minionTypesToFormation } from '../logic.ts';
 import Army from './Army.tsx';
+import { useCallback, useState } from 'react';
 
 
 export interface BattlefieldCallbacks {
@@ -22,15 +23,39 @@ const Battlefield = ({ game, playerIndex, enemyIndex }: BattlefieldProps): JSX.E
   const isCombatPhase: boolean = game.phase === GameplayPhase.COMBAT;
   const player: PlayerState = game.players[playerIndex];
   const enemy: PlayerState = game.players[enemyIndex];
-
   // score is in [-3, 3], shift it by +3 to get [0, 6], i.e., a marker index.
   const score: number = enemy.victoryPoints - player.victoryPoints + 3;
 
-  function handleAttack() {
-    if (!player.ready) {
-      Rune.actions.attack({ formation: player.formation });
+  const [selectedArmy, setSelectedArmy] = useState<number>(-1);
+
+  function handleSelectArmy(i: number) {
+    if (!isInputPhase) {
+      setSelectedArmy(-1);
+      return;
+    }
+    if (selectedArmy < 0) {
+      setSelectedArmy(i);
+    } else {
+      if (selectedArmy != i) {
+        const currentOrder: MinionType[] = formationToMinionTypes(player.nextFormation);
+        const newOrder: MinionType[] = currentOrder.slice();
+        newOrder[i] = currentOrder[selectedArmy];
+        newOrder[selectedArmy] = currentOrder[i];
+        Rune.actions.formation({ formation: minionTypesToFormation(newOrder) });
+      }
+      setSelectedArmy(-1);
     }
   }
+
+  function handleAttack() {
+    setSelectedArmy(-1);
+    if (!player.ready) {
+      Rune.actions.ready(true);
+    }
+  }
+
+  const enemyArmies: ArmyState[] = getArmiesByFormation(enemy, enemy.formation);
+  const playerArmies: ArmyState[] = getArmiesByFormation(player, player.nextFormation);
 
   return (
     <div className="battlefield">
@@ -46,15 +71,22 @@ const Battlefield = ({ game, playerIndex, enemyIndex }: BattlefieldProps): JSX.E
 
       <div className="arena">
         <div className="column">
-          <Army army={enemy.power} flip={true} />
+          <Army index={0} army={enemyArmies[0]} flip={true} isActive={false} isHighlighted={false} />
           <div className="army-score">
             { isCombatPhase && "00" }
           </div>
-          <Army army={player.power} flip={false} />
+          <Army
+            index={0}
+            army={playerArmies[0]}
+            flip={false}
+            onClick={handleSelectArmy}
+            isActive={selectedArmy === 0}
+            isHighlighted={selectedArmy >= 0}
+          />
         </div>
 
         <div className="column">
-          <Army army={enemy.speed} flip={true} />
+          <Army index={1} army={enemyArmies[1]} flip={true} isActive={false} isHighlighted={false} />
           <div className="army-score">
             { isCombatPhase && "00" }
             {
@@ -64,15 +96,29 @@ const Battlefield = ({ game, playerIndex, enemyIndex }: BattlefieldProps): JSX.E
               </button>
             }
           </div>
-          <Army army={player.speed} flip={false} />
+          <Army
+            index={1}
+            army={playerArmies[1]}
+            flip={false}
+            onClick={handleSelectArmy}
+            isActive={selectedArmy === 1}
+            isHighlighted={selectedArmy >= 0}
+          />
         </div>
 
         <div className="column">
-          <Army army={enemy.technical} flip={true} />
+          <Army index={2} army={enemyArmies[2]} flip={true} isActive={false} isHighlighted={false} />
           <div className="army-score">
             { isCombatPhase && "00" }
           </div>
-          <Army army={player.technical} flip={false} />
+          <Army
+            index={2}
+            army={playerArmies[2]}
+            flip={false}
+            onClick={handleSelectArmy}
+            isActive={selectedArmy === 2}
+            isHighlighted={selectedArmy >= 0}
+          />
         </div>
       </div>
 

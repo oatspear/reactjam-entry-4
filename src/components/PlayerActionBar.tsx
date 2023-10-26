@@ -102,7 +102,7 @@ const PlayerActionBar = ({ player }: PlayerActionBarProps): JSX.Element => {
         <div className="action">
           <button disabled={disableUpgrade} onClick={handleUpgrade}>
             {
-              army.tier < 2
+              (army.tier + army.upgrades) < 2
               ? <img src={iconUpgrade2} alt="Upgrade" />
               : <img src={iconUpgrade3} alt="Upgrade" />
             }

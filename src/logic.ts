@@ -95,6 +95,23 @@ export function formationToMinionTypeStack(formation: Formation): MinionType[] {
 }
 
 
+export function minionTypesToFormation(types: MinionType[]): Formation {
+  if (types.length != 3) { throw new Error(`bad minion type array: ${types}`) }
+  switch (types[0]) {
+    case MinionType.POWER:
+      if (types[1] === MinionType.SPEED) { return Formation.POWER_SPEED_TECHNICAL }
+      return Formation.POWER_TECHNICAL_SPEED;
+    case MinionType.SPEED:
+      if (types[1] === MinionType.POWER) { return Formation.SPEED_POWER_TECHNICAL }
+      return Formation.SPEED_TECHNICAL_POWER;
+    case MinionType.TECHNICAL:
+      if (types[1] === MinionType.POWER) { return Formation.TECHNICAL_POWER_SPEED }
+      return Formation.TECHNICAL_SPEED_POWER;
+  }
+  return Formation.POWER_SPEED_TECHNICAL;
+}
+
+
 export enum PlayerIndex {
   NONE = -1,
   PLAYER1 = 0,
@@ -124,11 +141,29 @@ export interface ArmyState {
   tier: number;
   combatValue: number;
   combatMultiplier: number;
+  production: number;
+  upgrades: number;
 }
 
 
 function newArmyState(type: MinionType): ArmyState {
-  return { type, minions: 1, tier: 1, combatMultiplier: 0, combatValue: 0 }
+  return {
+    type,
+    minions: 1,
+    tier: 1,
+    combatMultiplier: 0,
+    combatValue: 0,
+    production: 0,
+    upgrades: 0,
+  }
+}
+
+
+function applyCombatCommands(army: ArmyState): void {
+  army.minions += army.production;
+  army.production = 0;
+  army.tier += army.upgrades;
+  army.upgrades = 0;
 }
 
 
@@ -150,6 +185,7 @@ export interface PlayerState {
   human: boolean;
   thisTurnDeployed: boolean;
   thisTurnUpgraded: boolean;
+  nextFormation: Formation;
 }
 
 
@@ -167,6 +203,7 @@ function newPlayerState(id: string, index: PlayerIndex): PlayerState {
     human: true,
     thisTurnDeployed: false,
     thisTurnUpgraded: false,
+    nextFormation: Formation.POWER_SPEED_TECHNICAL,
   };
 }
 
@@ -214,8 +251,8 @@ export function getPlayerArmy(player: PlayerState, type: MinionType): ArmyState 
 }
 
 
-export function getArmiesByFormation(player: PlayerState): ArmyState[] {
-  switch (player.formation) {
+export function getArmiesByFormation(player: PlayerState, formation: Formation): ArmyState[] {
+  switch (formation) {
     case Formation.POWER_TECHNICAL_SPEED:
       return [player.power, player.technical, player.speed]
     case Formation.SPEED_POWER_TECHNICAL:
@@ -290,7 +327,7 @@ function validateDeployCommand(
 
 
 export function canDeploy(player: PlayerState): boolean {
-  // did the player already issue an attack command?
+  // did the player already issue a ready command?
   if (player.ready) { return false }
   console.log("Deploy Check 3")
   // does the player have enough resources?
@@ -302,7 +339,7 @@ export function canDeploy(player: PlayerState): boolean {
 
 function deployMinion(game: GameState, player: PlayerState, minion: MinionType): void {
   // place the minion on the battlefield
-  spawnMinion(game, player, minion);
+  enqueueMinion(game, player, minion);
   // spend the player's resources
   player.resources--;
   // update player flags
@@ -310,10 +347,10 @@ function deployMinion(game: GameState, player: PlayerState, minion: MinionType):
 }
 
 
-function spawnMinion(game: GameState, player: PlayerState, minion: MinionType): void {
+function enqueueMinion(game: GameState, player: PlayerState, minion: MinionType): void {
   // place the minion on the battlefield
   const army: ArmyState = getPlayerArmy(player, minion);
-  army.minions++;
+  army.production++;
   // register the minion and the event
   console.log("Minion Spawned:", minion)
   // emitMinionSpawned(game.events, minion, where);
@@ -321,29 +358,29 @@ function spawnMinion(game: GameState, player: PlayerState, minion: MinionType): 
 
 
 // -----------------------------------------------------------------------------
-// Game Logic - Attacking
+// Game Logic - Formations
 // -----------------------------------------------------------------------------
 
 
-function validateAttackCommand(
+function validateFormationCommand(
   game: GameState,
   playerId: string
 ): PlayerState {
-  console.log("Validate Attack")
+  console.log("Validate Formation")
   const playerIndex: PlayerIndex = getPlayerIndex(game, playerId);
-  // can the player issue attack commands?
+  // can the player issue formation commands?
   if (playerIndex === PlayerIndex.NONE) { throw Rune.invalidAction() }
-  console.log("Attack Check 1")
+  console.log("Formation Check 1")
   const player: PlayerState = game.players[playerIndex];
   console.log("Current player:", player.id)
   console.log("Action player:", playerId)
   console.log("Game Phase:", game.phase)
-  // is the game accepting attack commands?
+  // is the game accepting formation commands?
   if (game.phase != GameplayPhase.PLAYER_INPUT) { throw Rune.invalidAction() }
-  console.log("Attack Check 2")
-  // did the player already issue an attack command?
+  console.log("Formation Check 2")
+  // did the player already issue a ready command?
   if (player.ready) { throw Rune.invalidAction() }
-  console.log("Attack Check 3")
+  console.log("Formation Check 3")
   // return the active player
   return player;
 }
@@ -381,7 +418,7 @@ function validateUpgradeCommand(
 
 
 export function canUpgrade(player: PlayerState, minion: MinionType): boolean {
-  // did the player already issue an attack command?
+  // did the player already issue a ready command?
   if (player.ready) { return false }
   console.log("Upgrade Check 3")
   // does the player have enough resources?
@@ -389,7 +426,7 @@ export function canUpgrade(player: PlayerState, minion: MinionType): boolean {
   console.log("Upgrade Check 4")
   // can this type of minion be upgraded?
   const army: ArmyState = getPlayerArmy(player, minion);
-  if (army.tier >= MAX_TIER) { return false }
+  if ((army.tier + army.upgrades) >= MAX_TIER) { return false }
   console.log("Upgrade Check 5")
   return true;
 }
@@ -401,7 +438,8 @@ function upgradeMinions(
   minion: MinionType
 ): void {
   const army: ArmyState = getPlayerArmy(player, minion);
-  army.tier++;
+  // army.tier++;
+  army.upgrades++;
   // spend the player's resources
   player.resources -= COST_UPGRADE;
   // update player flags
@@ -532,6 +570,8 @@ return PlayerIndex.NONE;
 function resetCombatVariables(army: ArmyState): void {
   army.combatMultiplier = 1;
   army.combatValue = army.minions * army.tier;
+  army.production = 0;
+  army.upgrades = 0;
 }
 
 
@@ -651,16 +691,16 @@ function getBestArmyAgainst(player: PlayerState, threat: ArmyState): ArmyState {
 
 
 function canGetUpgrades(player: PlayerState): boolean {
-  if (player.power.tier < MAX_TIER) { return true }
-  if (player.speed.tier < MAX_TIER) { return true }
-  if (player.technical.tier < MAX_TIER) { return true }
+  if ((player.power.tier + player.power.upgrades) < MAX_TIER) { return true }
+  if ((player.speed.tier + player.speed.upgrades) < MAX_TIER) { return true }
+  if ((player.technical.tier + player.technical.upgrades) < MAX_TIER) { return true }
   return false;
 }
 
 
 function setAIReady(ai: PlayerState): void {
   ai.ready = true;
-  ai.formation = getRandomFormation();
+  ai.nextFormation = getRandomFormation();
 }
 
 
@@ -753,6 +793,7 @@ function enterPlayerInputPhase(game: GameState): void {
     player.resources += RESOURCES_PER_TURN;
     player.thisTurnDeployed = false;
     player.thisTurnUpgraded = false;
+    player.nextFormation = player.formation;
     resetCombatVariables(player.power);
     resetCombatVariables(player.speed);
     resetCombatVariables(player.technical);
@@ -764,8 +805,20 @@ function enterCombatPhase(game: GameState): void {
   game.phase = GameplayPhase.COMBAT;
   game.nextTimestamp = Rune.gameTimeInSeconds() + TIME_PER_COMBAT;
   game.timer = TIME_PER_COMBAT;
+
+  // put the queued commands in effect
   const attacker: PlayerState = game.players[0];
+  attacker.formation = attacker.nextFormation;
+  applyCombatCommands(attacker.power);
+  applyCombatCommands(attacker.speed);
+  applyCombatCommands(attacker.technical);
+
   const defender: PlayerState = game.players[1];
+  defender.formation = defender.nextFormation;
+  applyCombatCommands(defender.power);
+  applyCombatCommands(defender.speed);
+  applyCombatCommands(defender.technical);
+
   game.lastCombat = resolveCombat(attacker, defender);
 }
 
@@ -784,18 +837,18 @@ type UpgradeActionPayload = {
 };
 
 
-type AttackActionPayload = {
+type FormationActionPayload = {
   formation: Formation;
 };
 
 
-type ReadyActionPayload = {};
+type ReadyActionPayload = null | undefined | true;
 
 
 type GameActions = {
   deploy: (params: DeployActionPayload) => void;
   upgrade: (params: UpgradeActionPayload) => void;
-  attack: (params: AttackActionPayload) => void;
+  formation: (params: FormationActionPayload) => void;
   ready: (params: ReadyActionPayload) => void;
 };
 
@@ -851,13 +904,14 @@ Rune.initLogic({
       upgradeMinions(game, player, minion);
     },
 
-    attack({ formation }, { game, playerId }) {
-      const player: PlayerState = validateAttackCommand(game, playerId);
+    formation({ formation }, { game, playerId }) {
+      const player: PlayerState = validateFormationCommand(game, playerId);
       // execute the command
-      player.formation = formation;
-      player.ready = true;
+      // player.formation = formation;
+      player.nextFormation = formation;
+      // player.ready = true;
       // transition to the next state if possible
-      tryStateTransition(game);
+      // tryStateTransition(game);
     },
 
     ready(_, { game, playerId }) {

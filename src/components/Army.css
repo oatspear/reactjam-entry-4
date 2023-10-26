@@ -15,6 +15,14 @@
   border-radius: 4px;
 }
 
+.army.focus {
+  background-color: salmon;
+}
+
+.army.highlight {
+  background-color: darkkhaki;
+}
+
 
 /******************************************************************************/
 /* Minion Icon */
