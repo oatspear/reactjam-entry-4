@@ -1,10 +1,11 @@
 import "./App.css"
 import { useEffect, useState } from "react"
-import { GameState, GameplayPhase, PlayerIndex, PlayerState, getPlayerIndex } from "./logic.ts"
+import { ArmyState, GameState, GameplayPhase, MinionType, PlayerIndex, PlayerState, getPlayerIndex } from "./logic.ts"
 import PlayerStatusBar from "./components/PlayerStatusBar.tsx";
 
 import iconAvatarPlaceholder from "./assets/avatar-placeholder.png";
 import Battlefield from "./components/BattlefieldView.tsx";
+import PlayerActionBar from "./components/PlayerActionBar.tsx";
 
 type PlayersObject = Record<string, { playerId: string, displayName: string, avatarUrl: string }>;
 
@@ -59,10 +60,6 @@ function App() {
   const [players, setPlayers] = useState<PlayersObject>({});
   // layer visibility
   const [uiState, setUiState] = useState<UIState>(UIState.INITIAL);
-  // UI state variables
-  const [selectedTile, setSelectedTile] = useState<number>(-1);
-  const [actionableTiles, setActionableTiles] = useState<number[]>([]);
-  const [displayStats, setDisplayStats] = useState<DisplayMinionStats | undefined>();
 
 
   const spawnMinion = () => {
@@ -83,8 +80,17 @@ function App() {
             avatarUrl: iconAvatarPlaceholder,
           },
         });
-        if (newGame.phase === GameplayPhase.COMBAT && oldGame.phase != GameplayPhase.COMBAT) {
-          setUiState(UIState.TRANSITION_TO_COMBAT);
+        switch (newGame.phase) {
+          case GameplayPhase.PLAYER_INPUT:
+            if (oldGame.phase != GameplayPhase.PLAYER_INPUT) {
+              setUiState(UIState.INPUT_MAIN);
+            }
+            break;
+          case GameplayPhase.COMBAT:
+            if (oldGame.phase != GameplayPhase.COMBAT) {
+              setUiState(UIState.TRANSITION_TO_COMBAT);
+            }
+            break;
         }
       },
     })
@@ -102,7 +108,8 @@ function App() {
   const playerState: PlayerState = game.players[clientPlayer.index];
   const enemyState: PlayerState = game.players[clientEnemy.index];
 
-  const showPlayerActionBar: boolean = uiState != UIState.ANIMATING;
+  const spectator: boolean = myPlayerId == null;
+  const showActionBar: boolean = !spectator && uiState === UIState.INPUT_MAIN;
   const tempEnemyDisplayName: string = `width: ${width} ~ height: ${height}`;
 
   return (
@@ -114,23 +121,7 @@ function App() {
         <PlayerStatusBar player={playerState} displayName={clientPlayer.displayName} avatarUrl={clientPlayer.avatarUrl} />
       </main>
       <section className="main-action-container">
-        <div className="h-box evenly-spaced align-items-center">
-          <button>OK</button>
-        </div>
-        <div className="h-box evenly-spaced align-items-center">
-          <div className="v-box align-items-center">
-            <button>P+</button>
-            <span>3G</span>
-          </div>
-          <div className="v-box align-items-center">
-            <button>S+</button>
-            <span>3G</span>
-          </div>
-          <div className="v-box align-items-center">
-            <button>T+</button>
-            <span>3G</span>
-          </div>
-        </div>
+        { showActionBar && <PlayerActionBar player={playerState} /> }
       </section>
     </>
   )

@@ -9,9 +9,9 @@ import type { Players, RuneClient } from "rune-games-sdk/multiplayer"
 // -----------------------------------------------------------------------------
 
 
-const TIME_FOR_INTRO: number = 15;  // seconds
+const TIME_FOR_INTRO: number = 10;  // seconds
 const TIME_PER_TURN: number = 45;  // seconds
-const TIME_PER_COMBAT: number = 15;  // seconds
+const TIME_PER_COMBAT: number = 10;  // seconds
 
 const VICTORY_POINT_DIFF: number = 3;
 const RESOURCES_PER_TURN: number = 2;
@@ -214,7 +214,7 @@ function getPlayerArmy(player: PlayerState, type: MinionType): ArmyState {
 }
 
 
-function getArmiesByFormation(player: PlayerState): ArmyState[] {
+export function getArmiesByFormation(player: PlayerState): ArmyState[] {
   switch (player.formation) {
     case Formation.POWER_TECHNICAL_SPEED:
       return [player.power, player.technical, player.speed]
@@ -241,6 +241,7 @@ export interface GameState {
   phase: GameplayPhase;
   timer: number;
   turnsTaken: number;
+  nextTimestamp: number;
   players: PlayerState[];
   lastCombat?: CombatState;
 }
@@ -743,7 +744,8 @@ function enterNextState(game: GameState): void {
 function enterPlayerInputPhase(game: GameState): void {
   game.phase = GameplayPhase.PLAYER_INPUT;
   game.turnsTaken++;
-  game.timer = Rune.gameTimeInSeconds() + TIME_PER_TURN;
+  game.nextTimestamp = Rune.gameTimeInSeconds() + TIME_PER_TURN;
+  game.timer = TIME_PER_TURN;
   // attribute start of turn resources to all players
   // clear temporary combat data from all players
   // reset player flags
@@ -760,7 +762,8 @@ function enterPlayerInputPhase(game: GameState): void {
 
 function enterCombatPhase(game: GameState): void {
   game.phase = GameplayPhase.COMBAT;
-  game.timer = Rune.gameTimeInSeconds() + TIME_PER_COMBAT;
+  game.nextTimestamp = Rune.gameTimeInSeconds() + TIME_PER_COMBAT;
+  game.timer = TIME_PER_COMBAT;
   const attacker: PlayerState = game.players[0];
   const defender: PlayerState = game.players[1];
   game.lastCombat = resolveCombat(attacker, defender);
@@ -815,6 +818,7 @@ Rune.initLogic({
     const game: GameState = {
       phase: GameplayPhase.PLAYER_INPUT,
       turnsTaken: 0,
+      nextTimestamp: Rune.gameTimeInSeconds() + TIME_PER_TURN,
       timer: TIME_PER_TURN,
       players: setupPlayersFromIds(allPlayerIds),
     };
@@ -823,9 +827,10 @@ Rune.initLogic({
 
   update: ({ game }) => {
     runAIPlayers(game);
-    if (tryStateTransition(game)) { return }
     const t: number = Rune.gameTimeInSeconds();
-    if (t >= game.timer) {
+    game.timer = game.nextTimestamp - t;
+    if (tryStateTransition(game)) { return }
+    if (game.timer < 0) {
       // force state transition
       enterNextState(game);
     }

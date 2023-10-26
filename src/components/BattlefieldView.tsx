@@ -51,7 +51,7 @@ const Battlefield = ({ game, playerIndex, enemyIndex }: BattlefieldProps): JSX.E
           <Army army={enemy.speed} flip={true} />
           <div className="army-score">
             { isCombatPhase && "00" }
-            { isInputPhase && <button className="action">Go!</button> }
+            { isInputPhase && <button className="action">Go! ({game.timer})</button> }
           </div>
           <Army army={player.speed} flip={false} />
         </div>

@@ -1,7 +1,7 @@
 import { ArmyState, MinionType } from '../logic';
 import './Army.css';
 
-import iconPower from "../assets/power.png";
+import iconPower from "../assets/power-red.png";
 import iconSpeed from "../assets/speed-blue.png";
 import iconTechnical from "../assets/technical-green.png";
 
