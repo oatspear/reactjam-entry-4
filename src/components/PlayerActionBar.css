@@ -118,8 +118,39 @@
   background-color: #101010;
 }
 
+.main-action-bar > .action > button:disabled {
+  border: 0;
+  outline: 1px solid #333333;
+  background-color: gray;
+  cursor: not-allowed;
+}
+
 
 .main-action-bar > .action > button > img {
   width: 64px;
   height: 64px;
+  vertical-align: bottom;
+}
+
+
+.main-action-bar > .action > .cost {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.25em;
+  font-weight: bold;
+  background-color: lightskyblue;
+  padding: 0 1em;
+  border: 1px solid #333333;
+  border-radius: 4px;
+}
+
+.main-action-bar > .action > .cost.disabled {
+  background-color: lightgray;
+}
+
+
+.main-action-bar > .action > .cost > img {
+  width: 16px;
+  height: 16px;
 }

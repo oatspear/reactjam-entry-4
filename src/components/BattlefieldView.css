@@ -96,9 +96,22 @@
   top: -16px;
   /* padding L/R 1em on parent = 32px width */
   left: -48px;
+  background-color: #333333;
+  color: white;
+  border: 0;
+  outline: 1px solid white;
 }
 
+.battlefield > .arena > .column > .army-score > .action:hover {
+  outline: 2px solid white;
+  background-color: #4c4c4c;
+}
 
-.battlefield > .arena > .column > .action > button {
-  padding: 0 0.25em;
+.battlefield > .arena > .column > .army-score > .action:focus {
+  outline: 2px solid white;
+}
+
+.battlefield > .arena > .column > .army-score > .action:active {
+  outline: 2px solid white;
+  background-color: #191919;
 }

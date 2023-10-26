@@ -15,7 +15,7 @@ const TIME_PER_COMBAT: number = 10;  // seconds
 
 const VICTORY_POINT_DIFF: number = 3;
 const RESOURCES_PER_TURN: number = 2;
-const MAX_TIER: number = 3;
+export const MAX_TIER: number = 3;
 export const COST_UPGRADE: number = 3;
 
 export enum GameplayPhase {
@@ -202,7 +202,7 @@ function setupPlayersFromIds(allPlayerIds: string[]): PlayerState[] {
 }
 
 
-function getPlayerArmy(player: PlayerState, type: MinionType): ArmyState {
+export function getPlayerArmy(player: PlayerState, type: MinionType): ArmyState {
   switch (type) {
     case MinionType.POWER:
       return player.power;
@@ -289,7 +289,7 @@ function validateDeployCommand(
 }
 
 
-function canDeploy(player: PlayerState): boolean {
+export function canDeploy(player: PlayerState): boolean {
   // did the player already issue an attack command?
   if (player.ready) { return false }
   console.log("Deploy Check 3")
@@ -380,7 +380,7 @@ function validateUpgradeCommand(
 }
 
 
-function canUpgrade(player: PlayerState, minion: MinionType): boolean {
+export function canUpgrade(player: PlayerState, minion: MinionType): boolean {
   // did the player already issue an attack command?
   if (player.ready) { return false }
   console.log("Upgrade Check 3")
@@ -816,9 +816,9 @@ Rune.initLogic({
 
   setup(allPlayerIds): GameState {
     const game: GameState = {
-      phase: GameplayPhase.PLAYER_INPUT,
+      phase: GameplayPhase.INITIAL,
       turnsTaken: 0,
-      nextTimestamp: Rune.gameTimeInSeconds() + TIME_PER_TURN,
+      nextTimestamp: Rune.gameTimeInSeconds() + TIME_FOR_INTRO,
       timer: TIME_PER_TURN,
       players: setupPlayersFromIds(allPlayerIds),
     };

@@ -1,5 +1,5 @@
 import './PlayerActionBar.css';
-import { MinionType, PlayerState } from '../logic';
+import { ArmyState, COST_UPGRADE, MAX_TIER, MinionType, PlayerState, canDeploy, canUpgrade, getPlayerArmy } from '../logic';
 import { useCallback, useState } from 'react';
 
 import iconPower from "../assets/power.png";
@@ -8,6 +8,7 @@ import iconTechnical from "../assets/technical.png";
 import iconDeploy from "../assets/deploy-white.png";
 import iconUpgrade2 from "../assets/upgrade2-bw.png";
 import iconUpgrade3 from "../assets/upgrade3-bw.png";
+import iconResource from "../assets/resource.png";
 
 
 // Define the type for component props
@@ -17,19 +18,35 @@ interface PlayerActionBarProps {
 
 
 const PlayerActionBar = ({ player }: PlayerActionBarProps): JSX.Element => {
-  const [selectedArmy, setSelectedArmy] = useState<MinionType>(MinionType.POWER);
+  const [selectedArmyType, setSelectedArmyType] = useState<MinionType>(MinionType.POWER);
 
   const selectPowerArmy = useCallback(() => {
-    setSelectedArmy(MinionType.POWER)
+    setSelectedArmyType(MinionType.POWER)
   }, []);
 
   const selectSpeedArmy = useCallback(() => {
-    setSelectedArmy(MinionType.SPEED)
+    setSelectedArmyType(MinionType.SPEED)
   }, []);
 
   const selectTechnicalArmy = useCallback(() => {
-    setSelectedArmy(MinionType.TECHNICAL)
+    setSelectedArmyType(MinionType.TECHNICAL)
   }, []);
+
+  function handleDeploy() {
+    if (canDeploy(player)) {
+      Rune.actions.deploy({ minion: selectedArmyType });
+    }
+  }
+
+  function handleUpgrade() {
+    if (canUpgrade(player, selectedArmyType)) {
+      Rune.actions.upgrade({ minion: selectedArmyType });
+    }
+  }
+
+  const army: ArmyState = getPlayerArmy(player, selectedArmyType);
+  const disableDeploy: boolean = !canDeploy(player);
+  const disableUpgrade: boolean = !canUpgrade(player, selectedArmyType);
 
   return (
     <>
@@ -40,7 +57,7 @@ const PlayerActionBar = ({ player }: PlayerActionBarProps): JSX.Element => {
           name="deck-menu"
           id="button-minion-power"
           onChange={selectPowerArmy}
-          checked={selectedArmy === MinionType.POWER}
+          checked={selectedArmyType === MinionType.POWER}
         />
         <label className="button-label" htmlFor="button-minion-power">
           <img src={iconPower} alt="Army 1" />
@@ -52,7 +69,7 @@ const PlayerActionBar = ({ player }: PlayerActionBarProps): JSX.Element => {
           name="deck-menu"
           id="button-minion-speed"
           onChange={selectSpeedArmy}
-          checked={selectedArmy === MinionType.SPEED}
+          checked={selectedArmyType === MinionType.SPEED}
         />
         <label className="button-label" htmlFor="button-minion-speed">
           <img src={iconSpeed} alt="Army 2" />
@@ -64,7 +81,7 @@ const PlayerActionBar = ({ player }: PlayerActionBarProps): JSX.Element => {
           name="deck-menu"
           id="button-minion-technical"
           onChange={selectTechnicalArmy}
-          checked={selectedArmy === MinionType.TECHNICAL}
+          checked={selectedArmyType === MinionType.TECHNICAL}
         />
         <label className="button-label" htmlFor="button-minion-technical">
           <img src={iconTechnical} alt="Army 3" />
@@ -74,16 +91,26 @@ const PlayerActionBar = ({ player }: PlayerActionBarProps): JSX.Element => {
 
       <div className="main-action-bar">
         <div className="action">
-          <button>
+          <button disabled={disableDeploy} onClick={handleDeploy}>
             <img src={iconDeploy} alt="Deploy" />
           </button>
-          <span>1G</span>
+          <span className={disableDeploy ? "cost disabled" : "cost"}>
+            1
+            <img src={iconResource} alt="Resources" />
+          </span>
         </div>
         <div className="action">
-          <button>
-            <img src={iconUpgrade2} alt="Upgrade" />
+          <button disabled={disableUpgrade} onClick={handleUpgrade}>
+            {
+              army.tier < 2
+              ? <img src={iconUpgrade2} alt="Upgrade" />
+              : <img src={iconUpgrade3} alt="Upgrade" />
+            }
           </button>
-          <span>3G</span>
+          <span className={disableUpgrade ? "cost disabled" : "cost"}>
+            {COST_UPGRADE}
+            <img src={iconResource} alt="Resources" />
+          </span>
         </div>
       </div>
     </>

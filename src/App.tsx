@@ -1,11 +1,12 @@
 import "./App.css"
 import { useEffect, useState } from "react"
-import { ArmyState, GameState, GameplayPhase, MinionType, PlayerIndex, PlayerState, getPlayerIndex } from "./logic.ts"
+import { GameState, GameplayPhase, PlayerIndex, PlayerState, getPlayerIndex } from "./logic.ts"
 import PlayerStatusBar from "./components/PlayerStatusBar.tsx";
-
-import iconAvatarPlaceholder from "./assets/avatar-placeholder.png";
 import Battlefield from "./components/BattlefieldView.tsx";
 import PlayerActionBar from "./components/PlayerActionBar.tsx";
+
+import iconBot from "./assets/avatar-bot.png";
+
 
 type PlayersObject = Record<string, { playerId: string, displayName: string, avatarUrl: string }>;
 
@@ -77,7 +78,7 @@ function App() {
           AI: {
             playerId: "AI",
             displayName: "AI (Bot)",
-            avatarUrl: iconAvatarPlaceholder,
+            avatarUrl: iconBot,
           },
         });
         switch (newGame.phase) {
@@ -109,7 +110,7 @@ function App() {
   const enemyState: PlayerState = game.players[clientEnemy.index];
 
   const spectator: boolean = myPlayerId == null;
-  const showActionBar: boolean = !spectator && uiState === UIState.INPUT_MAIN;
+  const showActionBar: boolean = !spectator && uiState === UIState.INPUT_MAIN && !playerState.ready;
   const tempEnemyDisplayName: string = `width: ${width} ~ height: ${height}`;
 
   return (

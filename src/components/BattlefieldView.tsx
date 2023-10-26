@@ -26,6 +26,12 @@ const Battlefield = ({ game, playerIndex, enemyIndex }: BattlefieldProps): JSX.E
   // score is in [-3, 3], shift it by +3 to get [0, 6], i.e., a marker index.
   const score: number = enemy.victoryPoints - player.victoryPoints + 3;
 
+  function handleAttack() {
+    if (!player.ready) {
+      Rune.actions.attack({ formation: player.formation });
+    }
+  }
+
   return (
     <div className="battlefield">
       <div className="score-meter">
@@ -51,7 +57,12 @@ const Battlefield = ({ game, playerIndex, enemyIndex }: BattlefieldProps): JSX.E
           <Army army={enemy.speed} flip={true} />
           <div className="army-score">
             { isCombatPhase && "00" }
-            { isInputPhase && <button className="action">Go! ({game.timer})</button> }
+            {
+              isInputPhase &&
+              <button className="action" disabled={player.ready} onClick={handleAttack}>
+                Go! ({game.timer})
+              </button>
+            }
           </div>
           <Army army={player.speed} flip={false} />
         </div>

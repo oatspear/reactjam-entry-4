@@ -3,6 +3,7 @@ import LazyImage from './LazyImage';
 import './PlayerStatusBar.css';
 
 import iconPlaceholder from "../assets/avatar-placeholder.png";
+import iconResource from "../assets/resource-round.png";
 
 
 // Define the type for component props
@@ -26,7 +27,7 @@ const PlayerStatusBar = ({ player, displayName, avatarUrl }: PlayerStatusBarProp
         <div className="triangle"></div>
         <span className="label">{ player.resources }</span>
         <div className='overflowing-icon'>
-          <img src={iconPlaceholder} />
+          <img src={iconResource} />
         </div>
       </div>
     </div>

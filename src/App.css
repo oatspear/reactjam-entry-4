@@ -12,6 +12,7 @@
 
 .main-action-container {
   width: 100%;
+  min-height: 120px;
   flex: 0 0 auto;
   display: flex;
   flex-direction: column;
@@ -19,4 +20,5 @@
   padding: 1em 1em 0 1em;
   background-color: cadetblue;
   gap: 8px;
+  transition: all 0.25s;
 }
