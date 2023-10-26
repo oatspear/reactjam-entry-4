@@ -820,6 +820,11 @@ function enterCombatPhase(game: GameState): void {
   applyCombatCommands(defender.technical);
 
   game.lastCombat = resolveCombat(attacker, defender);
+  if (game.lastCombat.result > 0) {
+    attacker.victoryPoints++;
+  } else if (game.lastCombat.result < 0) {
+    defender.victoryPoints++;
+  }
 }
 
 
