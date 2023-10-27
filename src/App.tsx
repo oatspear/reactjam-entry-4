@@ -113,7 +113,7 @@ function App() {
       <MatchupHelper />
       <main>
         <PlayerStatusBar player={enemyState} displayName={clientEnemy.displayName} avatarUrl={clientEnemy.avatarUrl} />
-        <Battlefield game={game} playerIndex={clientPlayer.index} enemyIndex={clientEnemy.index} />
+        <Battlefield game={game} playerIndex={clientPlayer.index} enemyIndex={clientEnemy.index} showIntro={showIntroAnimation} />
         <PlayerStatusBar player={playerState} displayName={clientPlayer.displayName} avatarUrl={clientPlayer.avatarUrl} />
       </main>
       <section className="main-action-container">

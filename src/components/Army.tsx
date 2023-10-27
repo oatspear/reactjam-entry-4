@@ -1,6 +1,9 @@
 import './Army.css';
 import { ArmyState, MinionType } from '../logic';
 
+import iconHand from "../assets/hand-down.png";
+import iconDamage from "../assets/damage.png";
+
 import iconPower from "../assets/power-red.png";
 import iconSpeed from "../assets/speed-green.png";
 import iconTechnical from "../assets/technical-blue.png";
@@ -35,6 +38,8 @@ interface ArmyProps {
   onClick?: (i: number) => void;
   isActive: boolean;
   isHighlighted: boolean;
+  showHelper?: boolean;
+  multiplier: boolean;
 }
 
 
@@ -60,30 +65,36 @@ function minionSprite(type: MinionType, tier: number, enemy: boolean): string {
 }
 
 
-function extrasTop(icon: string, value: number): JSX.Element {
+function extrasTop(icon: string, value: number, multiplier: boolean): JSX.Element {
   return (
     <>
-      { indicators() }
+      { indicators(multiplier) }
       { valueLabel(icon, value) }
     </>
   );
 }
 
 
-function extrasBottom(icon: string, value: number): JSX.Element {
+function extrasBottom(icon: string, value: number, multiplier: boolean): JSX.Element {
   return (
     <>
       { valueLabel(icon, value) }
-      { indicators() }
+      { indicators(multiplier) }
     </>
   );
 }
 
 
-function indicators(): JSX.Element {
+function indicators(multiplier: boolean): JSX.Element {
   return (
     <div className="indicators">
-
+      {
+        multiplier &&
+        <div className="item animate__animated animate__heartBeat">
+          <img src={iconDamage} alt="Damage" />
+          <b>x2</b>
+        </div>
+      }
     </div>
   );
 }
@@ -102,7 +113,7 @@ function valueLabel(icon: string, value: number): JSX.Element {
 }
 
 
-const Army = ({ index, army, flip, onClick, isActive, isHighlighted }: ArmyProps): JSX.Element => {
+const Army = ({ index, army, flip, onClick, isActive, isHighlighted, showHelper, multiplier }: ArmyProps): JSX.Element => {
   const icon: string = army.type === MinionType.POWER
     ? iconPower
     : army.type === MinionType.SPEED
@@ -119,13 +130,15 @@ const Army = ({ index, army, flip, onClick, isActive, isHighlighted }: ArmyProps
 
   return (
     <div className={cls} onClick={onClick == null ? noop : () => onClick(index)}>
-      { flip && extrasTop(icon, armyValue) }
+      { flip && extrasTop(icon, armyValue, multiplier) }
 
       <div className="sprite round-icon icon-64">
         <img src={minionSprite(army.type, visibleTier, flip)} alt="sprite" />
       </div>
 
-      { !flip && extrasBottom(icon, futureArmyValue) }
+      { !flip && extrasBottom(icon, futureArmyValue, multiplier) }
+
+      { showHelper && <img className="animate__animated animate__fadeInDown animate__repeat-3" src={iconHand} alt="Pointer" /> }
     </div>
   );
 };

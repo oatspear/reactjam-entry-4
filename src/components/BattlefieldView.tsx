@@ -14,10 +14,11 @@ interface BattlefieldProps {
   game: GameState;
   playerIndex: PlayerIndex;
   enemyIndex: PlayerIndex;
+  showIntro: boolean;
 }
 
 
-const Battlefield = ({ game, playerIndex, enemyIndex }: BattlefieldProps): JSX.Element => {
+const Battlefield = ({ game, playerIndex, enemyIndex, showIntro }: BattlefieldProps): JSX.Element => {
   const isInputPhase: boolean = game.phase === GameplayPhase.PLAYER_INPUT;
   const isCombatPhase: boolean = game.phase === GameplayPhase.COMBAT;
   const player: PlayerState = game.players[playerIndex];
@@ -65,7 +66,14 @@ const Battlefield = ({ game, playerIndex, enemyIndex }: BattlefieldProps): JSX.E
 
       <div className="arena">
         <div className="column">
-          <Army index={0} army={enemyArmies[0]} flip={true} isActive={false} isHighlighted={false} />
+          <Army
+            index={0}
+            army={enemyArmies[0]}
+            flip={true}
+            isActive={false}
+            isHighlighted={false}
+            multiplier={isCombatPhase && (enemyArmies[0].combatMultiplier > 1)}
+          />
           <div className="army-score">
             {
               isCombatPhase &&
@@ -81,11 +89,20 @@ const Battlefield = ({ game, playerIndex, enemyIndex }: BattlefieldProps): JSX.E
             onClick={handleSelectArmy}
             isActive={selectedArmy === 0}
             isHighlighted={selectedArmy >= 0}
+            showHelper={showIntro}
+            multiplier={isCombatPhase && (playerArmies[0].combatMultiplier > 1)}
           />
         </div>
 
         <div className="column">
-          <Army index={1} army={enemyArmies[1]} flip={true} isActive={false} isHighlighted={false} />
+          <Army
+            index={1}
+            army={enemyArmies[1]}
+            flip={true}
+            isActive={false}
+            isHighlighted={false}
+            multiplier={isCombatPhase && (enemyArmies[1].combatMultiplier > 1)}
+          />
           <div className="army-score">
             {
               isCombatPhase &&
@@ -107,11 +124,20 @@ const Battlefield = ({ game, playerIndex, enemyIndex }: BattlefieldProps): JSX.E
             onClick={handleSelectArmy}
             isActive={selectedArmy === 1}
             isHighlighted={selectedArmy >= 0}
+            showHelper={showIntro}
+            multiplier={isCombatPhase && (playerArmies[1].combatMultiplier > 1)}
           />
         </div>
 
         <div className="column">
-          <Army index={2} army={enemyArmies[2]} flip={true} isActive={false} isHighlighted={false} />
+          <Army
+            index={2}
+            army={enemyArmies[2]}
+            flip={true}
+            isActive={false}
+            isHighlighted={false}
+            multiplier={isCombatPhase && (enemyArmies[2].combatMultiplier > 1)}
+          />
           <div className="army-score">
             {
               isCombatPhase &&
@@ -127,6 +153,8 @@ const Battlefield = ({ game, playerIndex, enemyIndex }: BattlefieldProps): JSX.E
             onClick={handleSelectArmy}
             isActive={selectedArmy === 2}
             isHighlighted={selectedArmy >= 0}
+            showHelper={showIntro}
+            multiplier={isCombatPhase && (playerArmies[2].combatMultiplier > 1)}
           />
         </div>
       </div>

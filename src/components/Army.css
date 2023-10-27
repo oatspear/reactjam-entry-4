@@ -57,6 +57,20 @@
 .army > .indicators {
   min-height: 24px;
   width: 24px;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  gap: 4px;
+  align-items: center;
+}
+
+.army > .indicators > .item {
+  flex: 0 0 auto;
+}
+
+.army > .indicators > .item > img {
+  width: 16px;
+  height: 16px;
 }
 
 
