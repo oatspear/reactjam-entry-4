@@ -138,7 +138,7 @@ const Army = ({ index, army, flip, onClick, isActive, isHighlighted, showHelper,
 
       { !flip && extrasBottom(icon, futureArmyValue, multiplier) }
 
-      { showHelper && <img className="animate__animated animate__fadeInDown animate__repeat-3" src={iconHand} alt="Pointer" /> }
+      { showHelper && <img className="helper animate__animated animate__fadeInDown animate__repeat-3" src={iconHand} alt="Pointer" /> }
     </div>
   );
 };
