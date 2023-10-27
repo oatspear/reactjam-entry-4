@@ -936,13 +936,5 @@ Rune.initLogic({
     },
   },
 
-  events: {
-    playerJoined() {
-      // Handle player joined
-    },
-
-    playerLeft() {
-      // Handle player left
-    },
-  },
+  // events: { playerJoined() {}, playerLeft() {}, },
 })

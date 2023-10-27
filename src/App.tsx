@@ -46,7 +46,7 @@ function getTopBottomPlayers(
   for (const state of game.players) {
     clientPlayers.push({ ...players[state.id], index: state.index, resources: state.resources });
   }
-  if (playerIndex === PlayerIndex.PLAYER1) {
+  if (playerIndex === PlayerIndex.PLAYER1 || playerIndex === PlayerIndex.NONE) {
     return clientPlayers.reverse();
   }
   return clientPlayers;
