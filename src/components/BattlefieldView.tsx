@@ -1,12 +1,8 @@
 import './BattlefieldView.css';
-import { ArmyState, Formation, GameState, GameplayPhase, MinionType, PlayerIndex, PlayerState, formationToMinionTypes, getArmiesByFormation, minionTypesToFormation } from '../logic.ts';
+import { ArmyState, GameState, GameplayPhase, MinionType, PlayerIndex, PlayerState, formationToMinionTypes, getArmiesByFormation, minionTypesToFormation } from '../logic.ts';
 import Army from './Army.tsx';
-import { useCallback, useState } from 'react';
-
-
-export interface BattlefieldCallbacks {
-  
-}
+import { useState } from 'react';
+import ScoreMeter from './ScoreMeter.tsx';
 
 
 // Define the type for component props
@@ -17,14 +13,13 @@ interface BattlefieldProps {
 }
 
 
-// ♦ ▲ ▼
 const Battlefield = ({ game, playerIndex, enemyIndex }: BattlefieldProps): JSX.Element => {
   const isInputPhase: boolean = game.phase === GameplayPhase.PLAYER_INPUT;
   const isCombatPhase: boolean = game.phase === GameplayPhase.COMBAT;
   const player: PlayerState = game.players[playerIndex];
   const enemy: PlayerState = game.players[enemyIndex];
-  // score is in [-3, 3], shift it by +3 to get [0, 6], i.e., a marker index.
-  const score: number = enemy.victoryPoints - player.victoryPoints + 3;
+  // score is in [-3, 3], positive iff the player is winning
+  const score: number = player.victoryPoints - enemy.victoryPoints;
 
   const [selectedArmy, setSelectedArmy] = useState<number>(-1);
 
@@ -59,15 +54,7 @@ const Battlefield = ({ game, playerIndex, enemyIndex }: BattlefieldProps): JSX.E
 
   return (
     <div className="battlefield">
-      <div className="score-meter">
-        <span className="marker">♦</span>
-        <span className="marker">♦</span>
-        <span className="marker">♦</span>
-        <span className="marker">♦</span>
-        <span className="marker">♦</span>
-        <span className="marker">♦</span>
-        <span className="marker">♦</span>
-      </div>
+      <ScoreMeter score={score} />
 
       <div className="arena">
         <div className="column">

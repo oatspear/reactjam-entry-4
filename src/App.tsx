@@ -4,6 +4,7 @@ import { GameState, GameplayPhase, PlayerIndex, PlayerState, getPlayerIndex } fr
 import PlayerStatusBar from "./components/PlayerStatusBar.tsx";
 import Battlefield from "./components/BattlefieldView.tsx";
 import PlayerActionBar from "./components/PlayerActionBar.tsx";
+import MatchupHelper from "./components/MatchupHelper.tsx";
 
 import iconBot from "./assets/avatar-bot.png";
 
@@ -56,12 +57,6 @@ function App() {
   // layer visibility
   const [uiState, setUiState] = useState<UIState>(UIState.INITIAL);
 
-
-  const spawnMinion = () => {
-    if (game == null) { return; }
-    // Rune.actions.spawn({ benchIndex, spawnPoint, moveTo });
-  };
-
   useEffect(() => {
     Rune.initClient({
       onChange: ({ newGame, oldGame, yourPlayerId, players }) => {
@@ -95,7 +90,7 @@ function App() {
     return <div>Loading...</div>
   }
 
-  const { height, width } = getWindowDimensions();
+  // const { height, width } = getWindowDimensions();
 
   const playerIndex: PlayerIndex = getPlayerIndex(game, myPlayerId);
   const [clientEnemy, clientPlayer] = getTopBottomPlayers(game, playerIndex, players);
@@ -105,11 +100,11 @@ function App() {
 
   const spectator: boolean = myPlayerId == null;
   const showActionBar: boolean = !spectator && uiState === UIState.INPUT_MAIN && !playerState.ready;
-  const tempEnemyDisplayName: string = `width: ${width} ~ height: ${height}`;
+  // const tempEnemyDisplayName: string = `width: ${width} ~ height: ${height}`;
 
   return (
     <>
-      <code>{tempEnemyDisplayName}</code>
+      <MatchupHelper />
       <main>
         <PlayerStatusBar player={enemyState} displayName={clientEnemy.displayName} avatarUrl={clientEnemy.avatarUrl} />
         <Battlefield game={game} playerIndex={clientPlayer.index} enemyIndex={clientEnemy.index} />
