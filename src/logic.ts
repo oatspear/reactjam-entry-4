@@ -13,7 +13,7 @@ const TIME_FOR_INTRO: number = 10;  // seconds
 const TIME_PER_TURN: number = 45;  // seconds
 const TIME_PER_COMBAT: number = 10;  // seconds
 
-const VICTORY_POINT_DIFF: number = 3;
+export const VICTORY_POINT_DIFF: number = 3;
 const RESOURCES_PER_TURN: number = 2;
 export const MAX_TIER: number = 3;
 export const COST_UPGRADE: number = 3;
