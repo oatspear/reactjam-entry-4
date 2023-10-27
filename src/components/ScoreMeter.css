@@ -18,27 +18,27 @@
 }
 
 .score-meter.score-0-7 {
-  background-image: linear-gradient(firebrick 0 10%, dodgerblue 30% 100%);
+  background-image: linear-gradient(firebrick 0 70%, dodgerblue 90% 100%);
 }
 
 .score-meter.score-1-7 {
-  background-image: linear-gradient(firebrick 0 20%, dodgerblue 40% 100%);
-}
-
-.score-meter.score-2-7 {
-  background-image: linear-gradient(firebrick 0 30%, dodgerblue 50% 100%);
-}
-
-.score-meter.score-4-7 {
-  background-image: linear-gradient(firebrick 0 50%, dodgerblue 70% 100%);
-}
-
-.score-meter.score-5-7 {
   background-image: linear-gradient(firebrick 0 60%, dodgerblue 80% 100%);
 }
 
+.score-meter.score-2-7 {
+  background-image: linear-gradient(firebrick 0 50%, dodgerblue 70% 100%);
+}
+
+.score-meter.score-4-7 {
+  background-image: linear-gradient(firebrick 0 30%, dodgerblue 50% 100%);
+}
+
+.score-meter.score-5-7 {
+  background-image: linear-gradient(firebrick 0 20%, dodgerblue 40% 100%);
+}
+
 .score-meter.score-6-7 {
-  background-image: linear-gradient(firebrick 0 70%, dodgerblue 90% 100%);
+  background-image: linear-gradient(firebrick 0 10%, dodgerblue 30% 100%);
 }
 
 

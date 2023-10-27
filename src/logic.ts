@@ -32,9 +32,12 @@ export enum MinionType {
 
 
 export function typeMatchupMultiplier(attacker: MinionType, defender: MinionType): number {
-  if (attacker === MinionType.POWER && defender === MinionType.TECHNICAL) { return 2 }
-  if (attacker === MinionType.SPEED && defender === MinionType.POWER) { return 2 }
-  if (attacker === MinionType.TECHNICAL && defender === MinionType.SPEED) { return 2 }
+  // if (attacker === MinionType.POWER && defender === MinionType.TECHNICAL) { return 2 }
+  // if (attacker === MinionType.SPEED && defender === MinionType.POWER) { return 2 }
+  // if (attacker === MinionType.TECHNICAL && defender === MinionType.SPEED) { return 2 }
+  if (attacker === MinionType.POWER && defender === MinionType.SPEED) { return 2 }
+  if (attacker === MinionType.SPEED && defender === MinionType.TECHNICAL) { return 2 }
+  if (attacker === MinionType.TECHNICAL && defender === MinionType.POWER) { return 2 }
   return 1;
 }
 

@@ -7,9 +7,6 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  background-image: url("./assets/bg.png");
-  background-position: center;
-  background-repeat: no-repeat;
 }
 
 .main-action-container {
@@ -20,7 +17,6 @@
   flex-direction: column;
   justify-content: space-evenly;
   padding: 1em 1em 0 1em;
-  background-color: cadetblue;
   gap: 8px;
   transition: all 0.25s;
 }
