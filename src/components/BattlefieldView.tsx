@@ -1,6 +1,6 @@
 import 'animate.css';
 import './BattlefieldView.css';
-import { ArmyState, CombatState, GameState, GameplayPhase, MinionType, PlayerIndex, PlayerState, calculateCombatScore, formationToMinionTypes, getArmiesByFormation, minionTypesToFormation } from '../logic.ts';
+import { ArmyState, GameState, GameplayPhase, MinionType, PlayerIndex, PlayerState, calculateCombatScore, formationToMinionTypes, getArmiesByFormation, minionTypesToFormation } from '../logic.ts';
 import Army from './Army.tsx';
 import { useState } from 'react';
 import ScoreMeter from './ScoreMeter.tsx';

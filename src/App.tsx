@@ -31,10 +31,12 @@ enum UIState {
 }
 
 
+/*
 function getWindowDimensions() {
   const { innerWidth: width, innerHeight: height } = window;
   return { width, height };
 }
+*/
 
 
 function getTopBottomPlayers(

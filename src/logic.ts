@@ -2,7 +2,7 @@
 // Imports
 // -----------------------------------------------------------------------------
 
-import type { Players, RuneClient } from "rune-games-sdk/multiplayer"
+import type { RuneClient } from "rune-games-sdk/multiplayer"
 
 // -----------------------------------------------------------------------------
 // Constants
@@ -340,9 +340,9 @@ export function canDeploy(player: PlayerState): boolean {
 }
 
 
-function deployMinion(game: GameState, player: PlayerState, minion: MinionType): void {
+function deployMinion(player: PlayerState, minion: MinionType): void {
   // place the minion on the battlefield
-  enqueueMinion(game, player, minion);
+  enqueueMinion(player, minion);
   // spend the player's resources
   player.resources--;
   // update player flags
@@ -350,7 +350,7 @@ function deployMinion(game: GameState, player: PlayerState, minion: MinionType):
 }
 
 
-function enqueueMinion(game: GameState, player: PlayerState, minion: MinionType): void {
+function enqueueMinion(player: PlayerState, minion: MinionType): void {
   // place the minion on the battlefield
   const army: ArmyState = getPlayerArmy(player, minion);
   army.production++;
@@ -435,11 +435,7 @@ export function canUpgrade(player: PlayerState, minion: MinionType): boolean {
 }
 
 
-function upgradeMinions(
-  game: GameState,
-  player: PlayerState,
-  minion: MinionType
-): void {
+function upgradeMinions(player: PlayerState, minion: MinionType): void {
   const army: ArmyState = getPlayerArmy(player, minion);
   // army.tier++;
   army.upgrades++;
@@ -610,7 +606,7 @@ function aiDecideNextAction(game: GameState, ai: PlayerState): void {
 
   // upgrade the selected army if possible
   if (canUpgrade(ai, army.type)) {
-    return upgradeMinions(game, ai, army.type);
+    return upgradeMinions(ai, army.type);
   }
 
   // are there any upgrades to get?
@@ -625,17 +621,17 @@ function aiDecideNextAction(game: GameState, ai: PlayerState): void {
   if (canDeploy(ai)) {
     // deploy to the selected army if it is the first minion
     if (!ai.thisTurnDeployed) {
-      return deployMinion(game, ai, army.type);
+      return deployMinion(ai, army.type);
     }
 
     // deploy to any army otherwise
     const r: number = Math.random() * 3;
     if (r < 1) {
-      return deployMinion(game, ai, MinionType.POWER);
+      return deployMinion(ai, MinionType.POWER);
     } else if (r < 2) {
-      return deployMinion(game, ai, MinionType.SPEED);
+      return deployMinion(ai, MinionType.SPEED);
     } else {
-      return deployMinion(game, ai, MinionType.TECHNICAL);
+      return deployMinion(ai, MinionType.TECHNICAL);
     }
   }
 
@@ -907,14 +903,14 @@ Rune.initLogic({
       // validate inputs
       const player: PlayerState = validateDeployCommand(game, playerId, minion);
       // execute the command
-      deployMinion(game, player, minion);
+      deployMinion(player, minion);
     },
 
     upgrade({ minion }, { game, playerId }) {
       // validate inputs
       const player: PlayerState = validateUpgradeCommand(game, playerId, minion);
       // execute the command
-      upgradeMinions(game, player, minion);
+      upgradeMinions(player, minion);
     },
 
     formation({ formation }, { game, playerId }) {

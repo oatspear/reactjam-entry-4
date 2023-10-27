@@ -1,5 +1,5 @@
 import './PlayerActionBar.css';
-import { ArmyState, COST_UPGRADE, MAX_TIER, MinionType, PlayerState, canDeploy, canUpgrade, getPlayerArmy } from '../logic';
+import { ArmyState, COST_UPGRADE, MinionType, PlayerState, canDeploy, canUpgrade, getPlayerArmy } from '../logic';
 import { useCallback, useState } from 'react';
 
 import iconPower from "../assets/power.png";
