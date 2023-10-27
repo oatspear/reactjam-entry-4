@@ -28,6 +28,10 @@
   flex: 0 0 auto;
   width: 32px;
   height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  align-items: center;
 }
 
 
@@ -56,16 +60,30 @@
 }
 
 
+.battlefield > .indicators > .army-score,
 .battlefield > .arena > .column > .army-score {
   position: relative;
   flex: 0 0 auto;
-  min-width: 0;
+  min-width: 32px;
   min-height: 32px;
   font-weight: bold;
-  border-radius: 4px;
-  background-color: goldenrod;
   margin: 0 auto;
-  padding: 0.25em 1em;
+}
+
+.battlefield > .indicators > .army-score > .icon,
+.battlefield > .arena > .column > .army-score > .icon {
+  position: absolute;
+  width: 64px;
+  height: 64px;
+  top: -16px;
+  left: -16px;
+  font-size: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-image: url("../assets/blast.png");
+  background-size: cover;
 }
 
 

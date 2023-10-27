@@ -1,3 +1,4 @@
+import 'animate.css';
 import "./App.css"
 import { useEffect, useState } from "react"
 import { GameState, GameplayPhase, PlayerIndex, PlayerState, getPlayerIndex } from "./logic.ts"
@@ -7,6 +8,9 @@ import PlayerActionBar from "./components/PlayerActionBar.tsx";
 import MatchupHelper from "./components/MatchupHelper.tsx";
 
 import iconBot from "./assets/avatar-bot.png";
+import iconSwordL from "./assets/sword-l.png";
+import iconSwordR from "./assets/sword-r.png";
+import iconHorn from "./assets/horn.png";
 
 
 type PlayersObject = Record<string, { playerId: string, displayName: string, avatarUrl: string }>;
@@ -101,6 +105,8 @@ function App() {
   const spectator: boolean = myPlayerId == null;
   const showActionBar: boolean = !spectator && uiState === UIState.INPUT_MAIN && !playerState.ready;
   // const tempEnemyDisplayName: string = `width: ${width} ~ height: ${height}`;
+  const showCombatAnimation: boolean = uiState === UIState.TRANSITION_TO_COMBAT;
+  const showIntroAnimation: boolean = game.phase === GameplayPhase.INITIAL;
 
   return (
     <>
@@ -112,6 +118,19 @@ function App() {
       </main>
       <section className="main-action-container">
         { showActionBar && <PlayerActionBar player={playerState} /> }
+        {
+          showCombatAnimation &&
+          <div className="combat-animnation">
+            <img className="animate__animated animate__backInRight" src={iconSwordL} alt="Sword" />
+            <img className="animate__animated animate__backInLeft" src={iconSwordR} alt="Sword" />
+          </div>
+        }
+        {
+          showIntroAnimation &&
+          <div className="combat-animnation">
+            <img className="animate__animated animate__delay-1s animate__repeat-3 animate__tada" src={iconHorn} alt="Horn" />
+          </div>
+        }
       </section>
     </>
   )

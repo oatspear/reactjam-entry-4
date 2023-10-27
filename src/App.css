@@ -20,3 +20,22 @@
   gap: 8px;
   transition: all 0.25s;
 }
+
+.combat-animation {
+  position: relative;
+  width: 128px;
+  height: 128px;
+}
+
+.combat-animation > img {
+  position: absolute;
+  width: 128px;
+  height: 128px;
+  top: 0;
+  left: 0;
+  z-index: 1;
+}
+
+.combat-animation > img:last-child {
+  z-index: 2;
+}

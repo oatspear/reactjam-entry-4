@@ -9,9 +9,9 @@ import type { Players, RuneClient } from "rune-games-sdk/multiplayer"
 // -----------------------------------------------------------------------------
 
 
-const TIME_FOR_INTRO: number = 10;  // seconds
-const TIME_PER_TURN: number = 45;  // seconds
-const TIME_PER_COMBAT: number = 10;  // seconds
+const TIME_FOR_INTRO: number = 8;  // seconds
+const TIME_PER_TURN: number = 30;  // seconds
+const TIME_PER_COMBAT: number = 8;  // seconds
 
 export const VICTORY_POINT_DIFF: number = 3;
 const RESOURCES_PER_TURN: number = 2;
@@ -283,7 +283,7 @@ export interface GameState {
   turnsTaken: number;
   nextTimestamp: number;
   players: PlayerState[];
-  lastCombat?: CombatState;
+  lastCombat: CombatState;
 }
 
 
@@ -533,7 +533,7 @@ function resolveCombatStep(
 
 
 // no side effects here
-function calculateCombatScore(attackingArmy: ArmyState, defendingArmy: ArmyState): number {
+export function calculateCombatScore(attackingArmy: ArmyState, defendingArmy: ArmyState): number {
   // calculate the type matchup bonuses
   const attackMultiplier = typeMatchupMultiplier(attackingArmy.type, defendingArmy.type);
   const defenseMultiplier = typeMatchupMultiplier(defendingArmy.type, attackingArmy.type);
@@ -882,6 +882,11 @@ Rune.initLogic({
       nextTimestamp: Rune.gameTimeInSeconds() + TIME_FOR_INTRO,
       timer: TIME_PER_TURN,
       players: setupPlayersFromIds(allPlayerIds),
+      lastCombat: {
+        attacker: PlayerIndex.PLAYER1,
+        defender: PlayerIndex.PLAYER2,
+        result: 0,
+      },
     };
     return game;
   },

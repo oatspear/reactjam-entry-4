@@ -1,8 +1,12 @@
+import 'animate.css';
 import './BattlefieldView.css';
-import { ArmyState, GameState, GameplayPhase, MinionType, PlayerIndex, PlayerState, formationToMinionTypes, getArmiesByFormation, minionTypesToFormation } from '../logic.ts';
+import { ArmyState, CombatState, GameState, GameplayPhase, MinionType, PlayerIndex, PlayerState, calculateCombatScore, formationToMinionTypes, getArmiesByFormation, minionTypesToFormation } from '../logic.ts';
 import Army from './Army.tsx';
 import { useState } from 'react';
 import ScoreMeter from './ScoreMeter.tsx';
+
+import iconDefeat from "../assets/defeat.png";
+import iconVictory from "../assets/victory.png";
 
 
 // Define the type for component props
@@ -52,6 +56,9 @@ const Battlefield = ({ game, playerIndex, enemyIndex }: BattlefieldProps): JSX.E
   const enemyArmies: ArmyState[] = getArmiesByFormation(enemy, enemy.formation);
   const playerArmies: ArmyState[] = getArmiesByFormation(player, player.nextFormation);
 
+  const combatResult: number = game.lastCombat.result;
+  const displayScore: number = game.lastCombat.attacker === playerIndex ? combatResult : -combatResult;
+
   return (
     <div className="battlefield">
       <ScoreMeter score={score} />
@@ -60,7 +67,12 @@ const Battlefield = ({ game, playerIndex, enemyIndex }: BattlefieldProps): JSX.E
         <div className="column">
           <Army index={0} army={enemyArmies[0]} flip={true} isActive={false} isHighlighted={false} />
           <div className="army-score">
-            { isCombatPhase && "00" }
+            {
+              isCombatPhase &&
+              <div className="icon animate__animated animate__bounceIn animate__delay-2s">
+                { calculateCombatScore(playerArmies[0], enemyArmies[0]) }
+              </div>
+            }
           </div>
           <Army
             index={0}
@@ -75,7 +87,12 @@ const Battlefield = ({ game, playerIndex, enemyIndex }: BattlefieldProps): JSX.E
         <div className="column">
           <Army index={1} army={enemyArmies[1]} flip={true} isActive={false} isHighlighted={false} />
           <div className="army-score">
-            { isCombatPhase && "00" }
+            {
+              isCombatPhase &&
+              <div className="icon animate__animated animate__bounceIn animate__delay-3s">
+                { calculateCombatScore(playerArmies[1], enemyArmies[1]) }
+              </div>
+            }
             {
               isInputPhase &&
               <button className="action" disabled={player.ready} onClick={handleAttack}>
@@ -96,7 +113,12 @@ const Battlefield = ({ game, playerIndex, enemyIndex }: BattlefieldProps): JSX.E
         <div className="column">
           <Army index={2} army={enemyArmies[2]} flip={true} isActive={false} isHighlighted={false} />
           <div className="army-score">
-            { isCombatPhase && "00" }
+            {
+              isCombatPhase &&
+              <div className="icon animate__animated animate__bounceIn animate__delay-4s">
+                { calculateCombatScore(playerArmies[2], enemyArmies[2]) }
+              </div>
+            }
           </div>
           <Army
             index={2}
@@ -109,7 +131,36 @@ const Battlefield = ({ game, playerIndex, enemyIndex }: BattlefieldProps): JSX.E
         </div>
       </div>
 
-      <div className="indicators"></div>
+      <div className="indicators">
+        <div className="icon-wrapper-32 icon-64">
+          {
+            isCombatPhase &&
+            <img
+              className="animate__animated animate__bounceIn animate__delay-5s"
+              src={displayScore > 0 ? iconDefeat : iconVictory }
+              alt="Result"
+            />
+          }
+        </div>
+        <div className="army-score">
+          {
+            isCombatPhase &&
+            <div className="icon animate__animated animate__bounceIn animate__delay-5s">
+              { displayScore }
+            </div>
+          }
+        </div>
+        <div className="icon-wrapper-32 icon-64">
+          {
+            isCombatPhase &&
+            <img
+              className="animate__animated animate__bounceIn animate__delay-5s"
+              src={displayScore > 0 ? iconVictory : iconDefeat }
+              alt="Result"
+            />
+          }
+        </div>
+      </div>
     </div>
   );
 };
