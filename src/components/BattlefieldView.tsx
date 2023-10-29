@@ -20,7 +20,7 @@ interface BattlefieldProps {
 
 const Battlefield = ({ game, playerIndex, enemyIndex, showIntro }: BattlefieldProps): JSX.Element => {
   const isInputPhase: boolean = game.phase === GameplayPhase.PLAYER_INPUT;
-  const isCombatPhase: boolean = game.phase === GameplayPhase.COMBAT;
+  const isCombatPhase: boolean = game.phase === GameplayPhase.COMBAT || game.phase === GameplayPhase.FINAL;
   const player: PlayerState = game.players[playerIndex];
   const enemy: PlayerState = game.players[enemyIndex];
   // score is in [-3, 3], positive iff the player is winning
@@ -165,7 +165,7 @@ const Battlefield = ({ game, playerIndex, enemyIndex, showIntro }: BattlefieldPr
             isCombatPhase &&
             <img
               className="animate__animated animate__bounceIn animate__delay-5s"
-              src={displayScore > 0 ? iconDefeat : iconVictory }
+              src={displayScore < 0 ? iconVictory : iconDefeat }
               alt="Result"
             />
           }

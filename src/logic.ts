@@ -22,6 +22,7 @@ export enum GameplayPhase {
   INITIAL,
   PLAYER_INPUT,
   COMBAT,
+  FINAL,
 }
 
 export enum MinionType {
@@ -665,19 +666,19 @@ function getBestArmyAgainst(player: PlayerState, threat: ArmyState): ArmyState {
   let weakArmy: ArmyState = player.power;
   switch (threat.type) {
     case MinionType.POWER:
-      strongArmy = player.speed;
+      strongArmy = player.technical;
       equalArmy = player.power;
-      weakArmy = player.technical;
+      weakArmy = player.speed;
       break;
     case MinionType.SPEED:
-      strongArmy = player.technical;
+      strongArmy = player.power;
       equalArmy = player.speed;
-      weakArmy = player.power;
+      weakArmy = player.technical;
       break;
     case MinionType.TECHNICAL:
-      strongArmy = player.power;
+      strongArmy = player.speed;
       equalArmy = player.technical;
-      weakArmy = player.speed;
+      weakArmy = player.power;
       break;
   }
   const strongValue = calculateCombatScore(strongArmy, threat);
@@ -732,27 +733,32 @@ function validateReadyCommand(
 }
 
 
-function checkGameOver(game: GameState): void {
+function isGameOver(game: GameState): boolean {
   const attacker: PlayerState = game.players[0];
   const defender: PlayerState = game.players[1];
   const diff: number = attacker.victoryPoints - defender.victoryPoints;
   if (diff > VICTORY_POINT_DIFF) {
-    Rune.gameOver({
-      players: {
-        [attacker.id]: "WON",  // attacker.victoryPoints
-        [defender.id]: "LOST",  // defender.victoryPoints
-      },
-      // delayPopUp: true,
-    })
+    const players: Record<string, "WON" | "LOST"> = {};
+    if (attacker.human) {
+      players[attacker.id] = "WON";  // attacker.victoryPoints
+    }
+    if (defender.human) {
+      players[defender.id] = "LOST";  // defender.victoryPoints
+    }
+    Rune.gameOver({ players });  // delayPopUp: true
+    return true;
   } else if (-diff > VICTORY_POINT_DIFF) {
-    Rune.gameOver({
-      players: {
-        [defender.id]: "WON",  // defender.victoryPoints
-        [attacker.id]: "LOST",  // attacker.victoryPoints
-      },
-      // delayPopUp: true,
-    })
+    const players: Record<string, "WON" | "LOST"> = {};
+    if (attacker.human) {
+      players[attacker.id] = "LOST";  // attacker.victoryPoints
+    }
+    if (defender.human) {
+      players[defender.id] = "WON";  // defender.victoryPoints
+    }
+    Rune.gameOver({ players });  // delayPopUp: true
+    return true;
   }
+  return false;
 }
 
 
@@ -770,13 +776,20 @@ function enterNextState(game: GameState): void {
     player.ready = false;
   }
   switch (game.phase) {
+    case GameplayPhase.FINAL:
+      return;  // do nothing
     case GameplayPhase.PLAYER_INPUT:
       return enterCombatPhase(game);
     case GameplayPhase.COMBAT:
-      checkGameOver(game);
-      return enterPlayerInputPhase(game);
+      updateVictoryPoints(game);
+      return isGameOver(game) ? enterFinalPhase(game) : enterPlayerInputPhase(game);
   }
   return enterPlayerInputPhase(game);
+}
+
+
+function enterFinalPhase(game: GameState): void {
+  game.phase = GameplayPhase.FINAL;
 }
 
 
@@ -819,9 +832,16 @@ function enterCombatPhase(game: GameState): void {
   applyCombatCommands(defender.technical);
 
   game.lastCombat = resolveCombat(attacker, defender);
-  if (game.lastCombat.result > 0) {
+}
+
+
+function updateVictoryPoints(game: GameState): void {
+  const combat: CombatState = game.lastCombat;
+  const attacker: PlayerState = game.players[combat.attacker];
+  const defender: PlayerState = game.players[combat.defender];
+  if (combat.result > 0) {
     attacker.victoryPoints++;
-  } else if (game.lastCombat.result < 0) {
+  } else if (combat.result < 0) {
     defender.victoryPoints++;
   }
 }
