@@ -2,7 +2,7 @@
 // Imports
 // -----------------------------------------------------------------------------
 
-import type { Players, RuneClient } from "rune-games-sdk/multiplayer"
+import type { RuneClient } from "rune-games-sdk/multiplayer"
 
 // -----------------------------------------------------------------------------
 // Constants
