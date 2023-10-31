@@ -2,7 +2,7 @@
 // Imports
 // -----------------------------------------------------------------------------
 
-import type { RuneClient } from "rune-games-sdk/multiplayer"
+import type { Players, RuneClient } from "rune-games-sdk/multiplayer"
 
 // -----------------------------------------------------------------------------
 // Constants
@@ -13,6 +13,7 @@ const TIME_FOR_INTRO: number = 8;  // seconds
 const TIME_PER_TURN: number = 30;  // seconds
 const TIME_PER_COMBAT: number = 8;  // seconds
 
+export const AI_PLAYER_ID: string = "AI";
 export const VICTORY_POINT_DIFF: number = 3;
 const RESOURCES_PER_TURN: number = 2;
 export const MAX_TIER: number = 3;
@@ -213,7 +214,7 @@ function newPlayerState(id: string, index: PlayerIndex): PlayerState {
 
 
 function newAIPlayerState(index: PlayerIndex): PlayerState {
-  const player: PlayerState = newPlayerState("AI", index);
+  const player: PlayerState = newPlayerState(AI_PLAYER_ID, index);
   player.human = false;
   return player;
 }
@@ -952,5 +953,33 @@ Rune.initLogic({
     },
   },
 
-  // events: { playerJoined() {}, playerLeft() {}, },
+  events: {
+    playerJoined(playerId, { game }) {
+      if (!playerId) { return }
+      const player: PlayerState = game.players[PlayerIndex.PLAYER2];
+      if (!player.human) {
+        player.human = true;
+        player.id = playerId;
+      }
+    },
+
+    playerLeft(playerId, { game }) {
+      if (!playerId) { return }
+      const p1: PlayerState = game.players[PlayerIndex.PLAYER1];
+      const p2: PlayerState = game.players[PlayerIndex.PLAYER2];
+      if (p1.id === playerId) {
+        // convert into bot and switch to player2
+        p1.id = AI_PLAYER_ID;
+        p1.human = false;
+        p1.index = PlayerIndex.PLAYER2;
+        p2.index = PlayerIndex.PLAYER1;
+        game.players[p1.index] = p1;
+        game.players[p2.index] = p2;
+      } else if (p2.id === playerId) {
+        // just convert into bot
+        p2.id = AI_PLAYER_ID;
+        p2.human = false;
+      }
+    },
+  },
 })
